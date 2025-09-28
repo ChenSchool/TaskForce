@@ -1,6 +1,6 @@
 import api from '../dataSource';
 
-const BASE = '/api/aircraft';
+const BASE = '/aircraft';
 
 export const getAllAircraft = () => api.get(BASE).then(res => res.data);
 export const getAircraftById = id => api.get(`${BASE}/${id}`).then(res => res.data);

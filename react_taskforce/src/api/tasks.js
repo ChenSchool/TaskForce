@@ -1,6 +1,9 @@
-const BASE = '/api/tasks';
-export const getAllTasks = () => fetch(BASE).then(r=>r.json());
-export const getTaskById = id => fetch(`${BASE}/${id}`).then(r=>r.json());
-export const createTask = data => fetch(BASE, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) }).then(r=>r.json());
-export const updateTask = (id,data) => fetch(`${BASE}/${id}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) }).then(r=>r.json());
-export const deleteTask = id => fetch(`${BASE}/${id}`, { method:'DELETE' });
+import api from '../dataSource';
+
+const BASE = '/tasks';
+
+export const getAllTasks = () => api.get(BASE).then(res => res.data);
+export const getTaskById = id => api.get(`${BASE}/${id}`).then(res => res.data);
+export const createTask = data => api.post(BASE, data).then(res => res.data);
+export const updateTask = (id, data) => api.put(`${BASE}/${id}`, data).then(res => res.data);
+export const deleteTask = id => api.delete(`${BASE}/${id}`);

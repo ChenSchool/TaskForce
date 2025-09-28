@@ -1,6 +1,9 @@
-const BASE = '/api/assignments';
-export const getAllAssignments = () => fetch(BASE).then(r=>r.json());
-export const getAssignmentById = id => fetch(`${BASE}/${id}`).then(r=>r.json());
-export const createAssignment = d => fetch(BASE, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(d) }).then(r=>r.json());
-export const updateAssignment = (id,d) => fetch(`${BASE}/${id}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(d) }).then(r=>r.json());
-export const deleteAssignment = id => fetch(`${BASE}/${id}`, { method:'DELETE' });
+import api from '../dataSource';
+
+const BASE = '/assignments';
+
+export const getAllAssignments = () => api.get(BASE).then(res => res.data);
+export const getAssignmentById = id => api.get(`${BASE}/${id}`).then(res => res.data);
+export const createAssignment = data => api.post(BASE, data).then(res => res.data);
+export const updateAssignment = (id, data) => api.put(`${BASE}/${id}`, data).then(res => res.data);
+export const deleteAssignment = id => api.delete(`${BASE}/${id}`);

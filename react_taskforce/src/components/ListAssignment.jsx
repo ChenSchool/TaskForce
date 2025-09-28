@@ -1,24 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { getAllAssignments, deleteAssignment } from '../api/assignments';
-import { getAllTasks } from '../api/tasks';
-import { getAllPersonnel } from '../api/personnel';
 import { useNavigate } from 'react-router-dom';
 
 export default function ListAssignment() {
   const [assignments, setAssignments] = useState([]);
-  const [tasks, setTasks] = useState([]);
-  const [people, setPeople] = useState([]);
   const nav = useNavigate();
 
   useEffect(() => {
     load();
-    getAllTasks().then(setTasks);
-    getAllPersonnel().then(setPeople);
   }, []);
 
   const load = () => getAllAssignments().then(setAssignments);
-  const findTask = id => tasks.find(t => t.id === id)?.description || '';
-  const findName = id => people.find(p => p.id === id)?.name || '';
 
   return (
     <div>
@@ -29,29 +21,25 @@ export default function ListAssignment() {
       <table className="table table-striped">
         <thead>
           <tr>
-            <th>ID</th>
+            <th>Assignment ID</th>
             <th>Task</th>
+            <th>Aircraft</th>
             <th>Personnel</th>
+            <th>Role</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {assignments.map(a => (
-            <tr key={a.id}>
-              <td>{a.id}</td>
-              <td>{findTask(a.task_id)}</td>
+            <tr key={a.assignment_id}>
+              <td>{a.assignment_id}</td>
+              <td>{a.task_description}</td>
+              <td>{a.aircraft_tail}</td>
+              <td>{a.personnel_name}</td>
+              <td>{a.assignment_role}</td>
               <td>
-                <ul className="ps-3 mb-0">
-                  {a.lines.map(line => (
-                    <li key={line.personnel_id}>
-                      {findName(line.personnel_id)} ({line.role})
-                    </li>
-                  ))}
-                </ul>
-              </td>
-              <td>
-                <button className="btn btn-sm btn-secondary me-2" onClick={() => nav(`/assignments/${a.id}`)}>Edit</button>
-                <button className="btn btn-sm btn-danger" onClick={() => { if (window.confirm('Delete this assignment?')) deleteAssignment(a.id).then(load); }}>
+                <button className="btn btn-sm btn-secondary me-2" onClick={() => nav(`/assignments/${a.assignment_id}`)}>Edit</button>
+                <button className="btn btn-sm btn-danger" onClick={() => { if (window.confirm('Delete this assignment?')) deleteAssignment(a.assignment_id).then(load); }}>
                   Delete
                 </button>
               </td>
