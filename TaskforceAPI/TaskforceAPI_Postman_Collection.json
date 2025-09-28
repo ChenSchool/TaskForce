@@ -1,0 +1,483 @@
+{
+	"info": {
+		"_postman_id": "taskforce-api-collection",
+		"name": "TaskforceAPI Collection",
+		"description": "Complete API testing collection for TaskforceAPI with all CRUD operations",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "Root Endpoint",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Aircraft",
+			"item": [
+				{
+					"name": "Get All Aircraft",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/aircraft",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"aircraft"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Aircraft by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/aircraft/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"aircraft",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Aircraft",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tail_number\": \"N12345\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/aircraft",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"aircraft"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Aircraft",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tail_number\": \"N54321\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/aircraft/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"aircraft",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Aircraft",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/aircraft/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"aircraft",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Personnel",
+			"item": [
+				{
+					"name": "Get All Personnel",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/personnel",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"personnel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Personnel by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/personnel/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"personnel",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Personnel",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Smith\",\n    \"specialty\": \"A&P\",\n    \"role\": \"Captain\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/personnel",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"personnel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Personnel",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Doe\",\n    \"specialty\": \"Avionics\",\n    \"role\": \"Coordinator\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/personnel/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"personnel",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Personnel",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/personnel/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"personnel",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tasks",
+			"item": [
+				{
+					"name": "Get All Tasks",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tasks",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Task by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tasks/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tasks",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Task",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"aircraft_id\": 1,\n    \"shift\": \"1st\",\n    \"description\": \"Engine inspection and maintenance\",\n    \"status\": \"Incomplete\",\n    \"date\": \"2025-08-10\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tasks",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Task",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"aircraft_id\": 1,\n    \"shift\": \"2nd\",\n    \"description\": \"Engine inspection and maintenance - Updated\",\n    \"status\": \"Complete\",\n    \"date\": \"2025-08-10\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tasks/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tasks",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Task",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tasks/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tasks",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Assignments",
+			"item": [
+				{
+					"name": "Get All Assignments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/assignments",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"assignments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Assignment by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/assignments/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"assignments",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Assignment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"task_id\": 1,\n    \"personnel_id\": 1,\n    \"personnel_name\": \"John Smith\",\n    \"role\": \"Captain\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/assignments",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"assignments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Assignment",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"task_id\": 1,\n    \"personnel_id\": 1,\n    \"personnel_name\": \"John Doe\",\n    \"role\": \"Coordinator\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/assignments/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"assignments",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Assignment",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/assignments/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"assignments",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
