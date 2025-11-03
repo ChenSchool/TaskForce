@@ -14,6 +14,17 @@ export const getAll: RequestHandler = async (req: Request, res: Response) => {
   }
 }; // Get all personnel
 
+export const getByShift: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const shift = req.params.shift;
+    const personnel = await PersonnelDao.getPersonnelByShift(shift);
+    res.status(200).json(personnel);
+  } catch (error) {
+    console.error('[personnel.controller][GetPersonnelByShift][Error]', error);
+    res.status(500).json({error: 'Failed to fetch personnel for shift'});
+  }
+}; // Get personnel by shift
+
 export const getById: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const personnelId = Number(req.params.id);

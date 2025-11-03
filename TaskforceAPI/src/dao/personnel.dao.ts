@@ -11,11 +11,16 @@ export const getPersonnelById = async (id: number) => {
   return await execute<Personnel[]>(personnelQueries.getById, [id]);
 };
 
+export const getPersonnelByShift = async (shift: string) => {
+  return await execute<Personnel[]>(personnelQueries.getByShift, [shift]);
+};
+
 export const createPersonnel = async (personnel: Personnel) => {
   return await execute<OkPacket>(personnelQueries.create, [
     personnel.name,
     personnel.specialty,
     personnel.role,
+    personnel.shift,
   ]);
 };
 
@@ -24,6 +29,7 @@ export const updatePersonnel = async (id: number, personnel: Personnel) => {
     personnel.name,
     personnel.specialty,
     personnel.role,
+    personnel.shift,
     id,
   ]);
 };

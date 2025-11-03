@@ -9,6 +9,7 @@ export const assignmentQueries = {
     ac.tail_number        AS aircraft_tail,
     t.description         AS task_description,
     t.status              AS task_status,
+    t.shift               AS task_shift,
     p.name                AS personnel_name,
     a.role                AS assignment_role
   FROM assignments a
@@ -50,5 +51,37 @@ getAssignmentById: `
   deleteAssignment: `
     DELETE FROM assignments
     WHERE id = ?
-  `,
-}; // Delete an assignment by its ID
+  `, // Delete an assignment by its ID
+
+  getAssignmentsByTaskId: `
+    SELECT
+      a.id                  AS assignment_id,
+      a.personnel_id        AS personnel_id,
+      p.name                AS personnel_name,
+      a.role                AS role
+    FROM assignments a
+    JOIN personnel  p  ON a.personnel_id = p.id
+    WHERE a.task_id = ?
+  `, // Fetch all assignments for a specific task
+
+  deleteAssignmentsByTaskId: `
+    DELETE FROM assignments
+    WHERE task_id = ?
+  `, // Delete all assignments for a specific task
+
+  getAssignmentsByPersonnelId: `
+    SELECT
+      a.id                  AS assignment_id,
+      a.task_id             AS task_id,
+      t.description         AS task_description,
+      a.role                AS role
+    FROM assignments a
+    JOIN tasks  t  ON a.task_id = t.id
+    WHERE a.personnel_id = ?
+  `, // Fetch all assignments for a specific personnel
+
+  deleteAssignmentsByPersonnelId: `
+    DELETE FROM assignments
+    WHERE personnel_id = ?
+  `, // Delete all assignments for a specific personnel
+};

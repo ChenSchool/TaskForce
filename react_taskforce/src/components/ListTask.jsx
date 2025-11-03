@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { getAllTasks, deleteTask } from '../api/tasks';
 import { getAllAircraft } from '../api/aircraft';
 import { useNavigate } from 'react-router-dom';
+import { exportToCSV, exportToPDF } from '../utils/export';
+import { toast } from 'react-toastify';
 
 export default function ListTask() {
   const [tasks, setTasks] = useState([]);
@@ -13,6 +15,48 @@ export default function ListTask() {
   useEffect(() => { load(); getAllAircraft().then(setAircraft); }, []);
   const load = () => getAllTasks().then(setTasks);
 
+  const handleExportCSV = () => {
+    try {
+      const exportData = tasks.map(t => ({
+        id: t.id,
+        aircraft: findTail(t.aircraft_id),
+        shift: t.shift,
+        description: t.description,
+        status: t.status,
+        date: t.date
+      }));
+      exportToCSV(exportData, 'tasks');
+      toast.success('Tasks exported to CSV successfully!');
+    } catch (error) {
+      toast.error('Failed to export tasks to CSV');
+    }
+  };
+
+  const handleExportPDF = () => {
+    try {
+      const exportData = tasks.map(t => ({
+        id: t.id,
+        aircraft: findTail(t.aircraft_id),
+        shift: t.shift,
+        description: t.description,
+        status: t.status,
+        date: t.date
+      }));
+      const columns = [
+        { header: 'ID', dataKey: 'id' },
+        { header: 'Aircraft', dataKey: 'aircraft' },
+        { header: 'Shift', dataKey: 'shift' },
+        { header: 'Description', dataKey: 'description' },
+        { header: 'Status', dataKey: 'status' },
+        { header: 'Date', dataKey: 'date' }
+      ];
+      exportToPDF(exportData, 'tasks', 'Tasks List', columns);
+      toast.success('Tasks exported to PDF successfully!');
+    } catch (error) {
+      toast.error('Failed to export tasks to PDF');
+    }
+  };
+
   const findTail = id => aircraft.find(a => a.id === id)?.tail_number || '';
 
   const handleDeleteClick = (id) => {
@@ -22,11 +66,17 @@ export default function ListTask() {
 
   const handleConfirmDelete = () => {
     if (taskToDelete !== null) {
-      deleteTask(taskToDelete).then(() => {
-        load();
-        setShowConfirm(false);
-        setTaskToDelete(null);
-      });
+      deleteTask(taskToDelete)
+        .then(() => {
+          load();
+          setShowConfirm(false);
+          setTaskToDelete(null);
+          toast.success('Task deleted successfully!');
+        })
+        .catch((error) => {
+          toast.error('Failed to delete task');
+          console.error(error);
+        });
     }
   };
 
@@ -36,32 +86,63 @@ export default function ListTask() {
   };
 
   return (
-    <div>
-      <div className="d-flex justify-content-between mb-3">
-        <h2>Tasks</h2>
-        <button className="btn btn-primary" onClick={()=>nav('/tasks/new')}>+ New</button>
+    <div className="page-container">
+      <div className="content-container">
+        <div className="page-header">
+          <h2>Task Board</h2>
+          <div className="export-buttons">
+            <button className="btn btn-success btn-sm me-2" onClick={handleExportCSV}>
+              <i className="bi bi-file-earmark-spreadsheet"></i> Export CSV
+            </button>
+            <button className="btn btn-danger btn-sm me-2" onClick={handleExportPDF}>
+              <i className="bi bi-file-earmark-pdf"></i> Export PDF
+            </button>
+            <button className="btn btn-light" onClick={()=>nav('/tasks/new')}>
+              <i className="bi bi-plus-circle"></i> Add Task
+            </button>
+          </div>
+        </div>
+        
+        <div className="table-responsive">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Aircraft Tail Number</th>
+                <th>Shift Category</th>
+                <th>Task Description</th>
+                <th>Status</th>
+                <th>Date Added</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tasks.map(t => (
+                <tr key={t.id}>
+                  <td>{findTail(t.aircraft_id)}</td>
+                  <td>{t.shift}</td>
+                  <td>{t.description}</td>
+                  <td>
+                    <span className={`badge ${t.status === 'Complete' ? 'bg-success' : 'bg-warning'}`}>
+                      {t.status}
+                    </span>
+                  </td>
+                  <td>{t.date}</td>
+                  <td>
+                    <div className="action-buttons">
+                      <button className="btn btn-sm btn-outline-primary" onClick={()=>nav(`/tasks/${t.id}`)}>
+                        <i className="bi bi-pencil"></i> Edit
+                      </button>
+                      <button className="btn btn-sm btn-outline-danger" onClick={()=>handleDeleteClick(t.id)}>
+                        <i className="bi bi-trash"></i> Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-      <table className="table table-striped">
-        <thead><tr><th>ID</th><th>Aircraft</th><th>Shift</th><th>Description</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
-        <tbody>
-          {tasks.map(t => (
-            <tr key={t.id}>
-              <td>{t.id}</td>
-              <td>{findTail(t.aircraft_id)}</td>
-              <td>{t.shift}</td>
-              <td>{t.description}</td>
-              <td>{t.status}</td>
-              <td>{t.date}</td>
-              <td>
-                <button className="btn btn-sm btn-secondary me-2" onClick={()=>nav(`/tasks/${t.id}`)}>Edit</button>
-                <button className="btn btn-sm btn-danger" onClick={()=>handleDeleteClick(t.id)}>
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
       {showConfirm && (
         <div className="modal" style={{ display: 'block', background: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog">
