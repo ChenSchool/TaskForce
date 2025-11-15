@@ -128,6 +128,33 @@ export const archiveValidation = [
 ];
 
 /**
+ * Validation for archive schedule creation/update
+ */
+export const archiveScheduleValidation = [
+  body('schedule_time')
+    .trim()
+    .notEmpty().withMessage('Schedule time is required')
+    .matches(/^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/).withMessage('Schedule time must be in HH:MM:SS format (24-hour)'),
+  
+  body('shift')
+    .notEmpty().withMessage('Shift is required')
+    .isIn(['1st', '2nd', '3rd']).withMessage('Shift must be 1st, 2nd, or 3rd'),
+  
+  body('enabled')
+    .optional()
+    .isBoolean().withMessage('Enabled must be true or false')
+];
+
+/**
+ * Validation for manual archive request
+ */
+export const manualArchiveValidation = [
+  body('shift')
+    .notEmpty().withMessage('Shift is required')
+    .isIn(['1st', '2nd', '3rd']).withMessage('Shift must be 1st, 2nd, or 3rd')
+];
+
+/**
  * Validation for ID parameters
  */
 export const idParamValidation = [

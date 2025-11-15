@@ -1,98 +1,94 @@
 import React, { useState, useEffect } from 'react';
-import { getAllArchives, deleteArchive, createArchive } from '../api/archives';
-import { useNavigate } from 'react-router-dom';
+import { getArchivedAssignments } from '../api/archiveSchedule';
 import { exportToCSV, exportToPDF } from '../utils/export';
 
 export default function ListArchives() {
-  const [archives, setArchives] = useState([]);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [shift, setShift] = useState('1st');
-  const [aircraftTail, setAircraftTail] = useState('');
-  const [cutoffDate, setCutoffDate] = useState('');
-  const [creating, setCreating] = useState(false);
-  const nav = useNavigate();
+  const [archivedAssignments, setArchivedAssignments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [filterShift, setFilterShift] = useState('all');
 
   const handleExportCSV = () => {
-    exportToCSV(archives, 'archives');
+    const filteredData = getFilteredData();
+    const exportData = filteredData.map(a => ({
+      id: a.id,
+      task_description: a.task_description,
+      aircraft_tail: a.aircraft_tail,
+      task_status: a.task_status,
+      task_shift: a.task_shift,
+      personnel_name: a.personnel_name,
+      role: a.role,
+      archived_at: new Date(a.archived_at).toLocaleString(),
+      archived_by: a.archived_by_schedule ? 'Scheduled' : 'Manual'
+    }));
+    exportToCSV(exportData, 'archived_assignments');
   };
 
   const handleExportPDF = () => {
+    const filteredData = getFilteredData();
+    const exportData = filteredData.map(a => ({
+      task: a.task_description,
+      aircraft: a.aircraft_tail,
+      status: a.task_status,
+      shift: a.task_shift,
+      personnel: a.personnel_name,
+      role: a.role,
+      archived: new Date(a.archived_at).toLocaleDateString()
+    }));
     const columns = [
-      { header: 'ID', dataKey: 'id' },
-      { header: 'Snapshot Date', dataKey: 'snapshot_date' },
-      { header: 'Aircraft', dataKey: 'aircraft_tail' },
-      { header: 'Shift', dataKey: 'shift' }
+      { header: 'Task', dataKey: 'task' },
+      { header: 'Aircraft', dataKey: 'aircraft' },
+      { header: 'Status', dataKey: 'status' },
+      { header: 'Shift', dataKey: 'shift' },
+      { header: 'Personnel', dataKey: 'personnel' },
+      { header: 'Role', dataKey: 'role' },
+      { header: 'Archived', dataKey: 'archived' }
     ];
-    exportToPDF(archives, 'archives', 'Archives', columns);
+    exportToPDF(exportData, 'archived_assignments', 'Archived Assignments', columns);
   };
 
   useEffect(() => {
     load();
-    // Set default cutoff date to 90 days ago
-    const defaultDate = new Date();
-    defaultDate.setDate(defaultDate.getDate() - 90);
-    setCutoffDate(defaultDate.toISOString().split('T')[0]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const load = () => getAllArchives().then(setArchives);
-
-  const handleDelete = (id) => {
-    if (window.confirm('Delete this archive? This cannot be undone.')) {
-      deleteArchive(id).then(load);
-    }
-  };
-
-  const handleCreateArchive = async () => {
-    setCreating(true);
+  const load = async () => {
     try {
-      const data = {
-        shift,
-        aircraft_tail: aircraftTail || null,
-        snapshot_date: new Date().toISOString().split('T')[0],
-        cutoff_date: cutoffDate
-      };
-      await createArchive(data);
-      setShowCreateModal(false);
-      setShift('1st');
-      setAircraftTail('');
-      load();
-      alert('Archive created successfully!');
-    } catch (error) {
-      alert('Failed to create archive: ' + error.message);
+      setLoading(true);
+      const data = await getArchivedAssignments(startDate, endDate);
+      setArchivedAssignments(data);
+    } catch (err) {
+      console.error('Failed to load archived assignments:', err);
     } finally {
-      setCreating(false);
+      setLoading(false);
     }
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString();
-  };
-
-  const formatDateTime = (dateString, timeString) => {
-    if (!dateString) return '-';
-    return `${formatDate(dateString)} ${timeString || ''}`;
-  };
-
-  const countRecords = (archive) => {
-    if (!archive.data_json) return 0;
-    try {
-      const data = typeof archive.data_json === 'string' 
-        ? JSON.parse(archive.data_json) 
-        : archive.data_json;
-      return (data.tasks?.length || 0) + 
-             (data.assignments?.length || 0) + 
-             (data.training?.length || 0);
-    } catch {
-      return 0;
+  const getFilteredData = () => {
+    let filtered = archivedAssignments;
+    
+    if (filterShift !== 'all') {
+      filtered = filtered.filter(a => a.task_shift === filterShift);
     }
+    
+    return filtered;
+  };
+
+  const handleFilter = () => {
+    load();
+  };
+
+  const formatDateTime = (dateString) => {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleString();
   };
 
   return (
     <div className="page-container">
       <div className="content-container">
         <div className="page-header">
-          <h2>Archives</h2>
+          <h2>Archived Assignments</h2>
           <div className="export-buttons">
             <button className="btn btn-success btn-sm me-2" onClick={handleExportCSV}>
               <i className="bi bi-file-earmark-spreadsheet"></i> Export CSV
@@ -100,127 +96,111 @@ export default function ListArchives() {
             <button className="btn btn-danger btn-sm me-2" onClick={handleExportPDF}>
               <i className="bi bi-file-earmark-pdf"></i> Export PDF
             </button>
-            <button 
-              className="btn btn-light" 
-              onClick={() => setShowCreateModal(true)}>
-              <i className="bi bi-plus-circle"></i> Create Archive
-            </button>
           </div>
         </div>
 
-      {/* Create Archive Modal */}
-      {showCreateModal && (
-        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Create New Archive</h5>
-                <button 
-                  type="button" 
-                  className="btn-close" 
-                  onClick={() => setShowCreateModal(false)} />
+        {/* Filter Options */}
+        <div className="card mb-3">
+          <div className="card-body">
+            <div className="row g-3">
+              <div className="col-md-3">
+                <label className="form-label">Start Date</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
               </div>
-              <div className="modal-body">
-                <div className="mb-3">
-                  <label className="form-label">Shift</label>
-                  <select 
-                    className="form-select" 
-                    value={shift} 
-                    onChange={e => setShift(e.target.value)}>
-                    <option value="1st">1st Shift</option>
-                    <option value="2nd">2nd Shift</option>
-                    <option value="3rd">3rd Shift</option>
-                  </select>
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Aircraft Tail (Optional)</label>
-                  <input 
-                    type="text" 
-                    className="form-control" 
-                    value={aircraftTail} 
-                    onChange={e => setAircraftTail(e.target.value)}
-                    placeholder="e.g., N54321" />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Cutoff Date</label>
-                  <input 
-                    type="date" 
-                    className="form-control" 
-                    value={cutoffDate} 
-                    onChange={e => setCutoffDate(e.target.value)} />
-                  <small className="form-text text-muted">
-                    Completed tasks before this date will be archived (default: 90 days ago)
-                  </small>
-                </div>
+              <div className="col-md-3">
+                <label className="form-label">End Date</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
               </div>
-              <div className="modal-footer">
-                <button 
-                  type="button" 
-                  className="btn btn-secondary" 
-                  onClick={() => setShowCreateModal(false)}
-                  disabled={creating}>
-                  Cancel
-                </button>
-                <button 
-                  type="button" 
-                  className="btn btn-primary" 
-                  onClick={handleCreateArchive}
-                  disabled={creating}>
-                  {creating ? 'Creating...' : 'Create Archive'}
+              <div className="col-md-3">
+                <label className="form-label">Shift</label>
+                <select
+                  className="form-control"
+                  value={filterShift}
+                  onChange={(e) => setFilterShift(e.target.value)}
+                >
+                  <option value="all">All Shifts</option>
+                  <option value="1st">1st Shift</option>
+                  <option value="2nd">2nd Shift</option>
+                  <option value="3rd">3rd Shift</option>
+                </select>
+              </div>
+              <div className="col-md-3 d-flex align-items-end">
+                <button className="btn btn-primary w-100" onClick={handleFilter}>
+                  <i className="bi bi-funnel"></i> Apply Filter
                 </button>
               </div>
             </div>
           </div>
         </div>
-      )}
 
-        <div className="table-responsive">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Date/Time</th>
-                <th>Shift</th>
-                <th>Aircraft</th>
-                <th>Record Count</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {archives.map(a => (
-                <tr key={a.id}>
-                  <td>{a.id}</td>
-                  <td>{formatDateTime(a.snapshot_date, a.snapshot_time)}</td>
-                  <td>
-                    {a.shift ? <span className="badge bg-info">{a.shift}</span> : '-'}
-                  </td>
-                  <td>{a.aircraft_tail || 'All'}</td>
-                  <td>
-                    <span className="badge bg-secondary">{countRecords(a)} records</span>
-                  </td>
-                  <td>
-                    <div className="action-buttons">
-                      <button 
-                        className="btn btn-sm btn-outline-primary" 
-                        onClick={() => nav(`/archives/${a.id}`)}>
-                        <i className="bi bi-eye"></i> View
-                      </button>
-                      <button 
-                        className="btn btn-sm btn-outline-danger" 
-                        onClick={() => handleDelete(a.id)}>
-                        <i className="bi bi-trash"></i> Delete
-                      </button>
-                    </div>
-                  </td>
+        {loading ? (
+          <div className="text-center my-5">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        ) : (
+          <div className="table-responsive">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Task</th>
+                  <th>Aircraft</th>
+                  <th>Status</th>
+                  <th>Shift</th>
+                  <th>Personnel</th>
+                  <th>Role</th>
+                  <th>Archived Date</th>
+                  <th>Type</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {archives.length === 0 && (
-          <div className="alert alert-info">
-            No archives found. Click "Create Archive" to manually archive old records.
+              </thead>
+              <tbody>
+                {getFilteredData().length === 0 ? (
+                  <tr>
+                    <td colSpan="8" className="text-center text-muted">
+                      No archived assignments found.
+                    </td>
+                  </tr>
+                ) : (
+                  getFilteredData().map(a => (
+                    <tr key={a.id}>
+                      <td>{a.task_description}</td>
+                      <td>{a.aircraft_tail}</td>
+                      <td>
+                        <span className={`badge ${
+                          a.task_status === 'Completed' ? 'bg-success' :
+                          a.task_status === 'In Progress' ? 'bg-warning' :
+                          'bg-secondary'
+                        }`}>
+                          {a.task_status}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="badge bg-info">{a.task_shift}</span>
+                      </td>
+                      <td>{a.personnel_name}</td>
+                      <td>{a.role || '-'}</td>
+                      <td>{formatDateTime(a.archived_at)}</td>
+                      <td>
+                        <span className={`badge ${a.archived_by_schedule ? 'bg-info' : 'bg-primary'}`}>
+                          {a.archived_by_schedule ? 'Scheduled' : 'Manual'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         )}
       </div>

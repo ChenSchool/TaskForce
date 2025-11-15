@@ -23,6 +23,7 @@ import CreateEditTraining from './components/CreateEditTraining';
 import ListArchives from './components/ListArchives';
 import ViewArchive from './components/ViewArchive';
 import ListUsers from './components/ListUsers';
+import ArchiveScheduleManager from './components/ArchiveScheduleManager';
 
 function App() {
   return (
@@ -71,6 +72,8 @@ function App() {
 
           <Route path="archives" element={<ProtectedRoute><ListArchives /></ProtectedRoute>} />
           <Route path="archives/:id" element={<ProtectedRoute><ViewArchive /></ProtectedRoute>} />
+
+          <Route path="archive-schedules" element={<ProtectedRoute roles={['Manager', 'Supervisor']}><ArchiveScheduleManager /></ProtectedRoute>} />
 
           <Route path="users" element={<ProtectedRoute roles={['Manager', 'Supervisor']}><ListUsers /></ProtectedRoute>} />
           <Route path="users/new" element={<ProtectedRoute roles={['Manager', 'Supervisor']}><CreateUser /></ProtectedRoute>} />

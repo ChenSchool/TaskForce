@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { getAllAssignments, deleteAssignment } from '../api/assignments';
+import { manualArchive } from '../api/archiveSchedule';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { exportToCSV, exportToPDF } from '../utils/export';
 
 export default function ListAssignment() {
   const [groupedAssignments, setGroupedAssignments] = useState([]);
   const [activeShift, setActiveShift] = useState('1st');
+  const [showArchiveModal, setShowArchiveModal] = useState(false);
+  const [archiving, setArchiving] = useState(false);
   const nav = useNavigate();
+  const { hasRole } = useAuth();
 
   const handleExportCSV = () => {
     const currentShiftData = groupedAssignments.filter(g => g.shift === activeShift);
@@ -90,6 +96,29 @@ export default function ListAssignment() {
     }
   };
 
+  const handleArchiveClick = () => {
+    setShowArchiveModal(true);
+  };
+
+  const handleConfirmArchive = async () => {
+    try {
+      setArchiving(true);
+      const result = await manualArchive({ shift: activeShift });
+      
+      toast.success(`Successfully archived ${result.assignments_archived} assignment(s) for ${activeShift} shift!`);
+      setShowArchiveModal(false);
+      load(); // Reload assignments
+    } catch (err) {
+      toast.error('Failed to archive: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setArchiving(false);
+    }
+  };
+
+  const handleCancelArchive = () => {
+    setShowArchiveModal(false);
+  };
+
   // Filter assignments by active shift
   const filteredAssignments = groupedAssignments.filter(g => g.shift === activeShift);
 
@@ -99,6 +128,11 @@ export default function ListAssignment() {
         <div className="page-header">
           <h2>Assignments</h2>
           <div className="export-buttons">
+            {(hasRole('Manager') || hasRole('Supervisor')) && (
+              <button className="btn btn-warning btn-sm me-2" onClick={handleArchiveClick}>
+                <i className="bi bi-archive"></i> Archive {activeShift} Shift
+              </button>
+            )}
             <button className="btn btn-success btn-sm me-2" onClick={handleExportCSV}>
               <i className="bi bi-file-earmark-spreadsheet"></i> Export CSV
             </button>
@@ -181,6 +215,47 @@ export default function ListAssignment() {
           </table>
         </div>
       </div>
+
+      {/* Archive Confirmation Modal */}
+      {showArchiveModal && (
+        <div className="modal" style={{ display: 'block', background: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header bg-warning">
+                <h5 className="modal-title">
+                  <i className="bi bi-archive"></i> Archive {activeShift} Shift Assignments
+                </h5>
+                <button type="button" className="btn-close" onClick={handleCancelArchive}></button>
+              </div>
+              <div className="modal-body">
+                <p>This will archive <strong>ALL assignments</strong> for the <strong>{activeShift} shift</strong> currently displayed on the assignments page.</p>
+                <div className="alert alert-warning">
+                  <small>
+                    <i className="bi bi-exclamation-triangle"></i> This action will archive all assignments for the {activeShift} shift, regardless of their age. Archived assignments can be viewed in the Archive Schedule Manager.
+                  </small>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={handleCancelArchive} disabled={archiving}>
+                  Cancel
+                </button>
+                <button className="btn btn-warning" onClick={handleConfirmArchive} disabled={archiving}>
+                  {archiving ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                      Archiving...
+                    </>
+                  ) : (
+                    <>
+                      <i className="bi bi-archive"></i> Archive Now
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

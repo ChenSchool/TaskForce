@@ -39,6 +39,9 @@ export default function Navbar() {
             <li className="nav-item"><NavLink className="nav-link" to="/training">Training</NavLink></li>
             <li className="nav-item"><NavLink className="nav-link" to="/archives">Archives</NavLink></li>
             {hasRole(['Manager', 'Supervisor']) && (
+              <li className="nav-item"><NavLink className="nav-link" to="/archive-schedules">Archive Scheduler</NavLink></li>
+            )}
+            {hasRole(['Manager', 'Supervisor']) && (
               <li className="nav-item"><NavLink className="nav-link" to="/users">Users</NavLink></li>
             )}
           </ul>
