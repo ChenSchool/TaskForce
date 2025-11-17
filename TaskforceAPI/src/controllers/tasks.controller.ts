@@ -54,6 +54,28 @@ export const getByAircraftId: RequestHandler = async (req: Request, res: Respons
 export const create: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const newTask: Task = req.body;
+
+    // Validate required fields
+    if (!newTask.date || newTask.date.trim() === '') {
+      res.status(400).json({ message: "Date is required for task creation" });
+      return;
+    }
+
+    if (!newTask.aircraft_id) {
+      res.status(400).json({ message: "Aircraft selection is required" });
+      return;
+    }
+
+    if (!newTask.description || newTask.description.trim() === '') {
+      res.status(400).json({ message: "Description is required and cannot be empty" });
+      return;
+    }
+
+    if (!newTask.shift) {
+      res.status(400).json({ message: "Shift selection is required" });
+      return;
+    }
+
     const result: OkPacket = await dao.createTask(newTask);
 
     res.status(201).json({ id: result.insertId });
@@ -67,6 +89,28 @@ export const update: RequestHandler = async (req: Request, res: Response): Promi
   try {
     const taskId = Number(req.params.id);
     const updatedTask: Task = req.body;
+
+    // Validate required fields
+    if (!updatedTask.date || updatedTask.date.trim() === '') {
+      res.status(400).json({ message: "Date is required for task update" });
+      return;
+    }
+
+    if (!updatedTask.aircraft_id) {
+      res.status(400).json({ message: "Aircraft selection is required" });
+      return;
+    }
+
+    if (!updatedTask.description || updatedTask.description.trim() === '') {
+      res.status(400).json({ message: "Description is required and cannot be empty" });
+      return;
+    }
+
+    if (!updatedTask.shift) {
+      res.status(400).json({ message: "Shift selection is required" });
+      return;
+    }
+
     const result: OkPacket = await dao.updateTask(taskId, updatedTask);
 
     if (result.affectedRows === 0) {

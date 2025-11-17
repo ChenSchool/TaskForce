@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { getAllTraining, deleteTraining } from '../api/training';
 import { useNavigate } from 'react-router-dom';
 import { exportToCSV, exportToPDF } from '../utils/export';
+import { useAuth } from '../context/AuthContext';
 
 export default function ListTraining() {
   const [training, setTraining] = useState([]);
   const [showConfirm, setShowConfirm] = useState(false);
   const [trainingToDelete, setTrainingToDelete] = useState(null);
   const nav = useNavigate();
+  const { darkMode } = useAuth();
 
   useEffect(() => {
     load();
@@ -90,7 +92,7 @@ export default function ListTraining() {
               </td>
               <td>{t.phase}</td>
               <td>
-                <div className="progress" style={{ minWidth: '100px' }}>
+                <div className="progress" style={{ minWidth: '100px', position: 'relative' }}>
                   <div 
                     className="progress-bar" 
                     role="progressbar" 
@@ -98,8 +100,18 @@ export default function ListTraining() {
                     aria-valuenow={t.progress} 
                     aria-valuemin="0" 
                     aria-valuemax="100">
-                    {t.progress}%
                   </div>
+                  <span style={{
+                    position: 'absolute',
+                    left: '50%',
+                    top: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    fontWeight: 'bold',
+                    color: darkMode ? '#fff' : '#000',
+                    fontSize: '0.875rem'
+                  }}>
+                    {t.progress}%
+                  </span>
                 </div>
               </td>
               <td>

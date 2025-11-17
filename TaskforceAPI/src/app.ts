@@ -69,6 +69,12 @@ app.use ('/training', trainingRouter); // Use trainingRouter for /training route
 app.use ('/archives', archivesRouter); // Use archivesRouter for /archives routes
 app.use ('/archive-schedules', archiveScheduleRouter); // Use archiveScheduleRouter for /archive-schedules routes
 
-app.listen(port, () => {
- console.log(`Example app listening at http://localhost:${port}`)
-});
+// Only start the server if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(port, () => {
+    console.log(`Example app listening at http://localhost:${port}`)
+  });
+}
+
+// Export app for testing
+export default app;

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { getAllPersonnel } from '../api/personnel';
 import { getTrainingById, createTraining, updateTraining } from '../api/training';
 import { useNavigate, useParams } from 'react-router-dom';
+import { getErrorMessage } from '../utils/validation';
+import { toast } from 'react-toastify';
 
 export default function CreateEditTraining() {
   const [personnelId, setPersonnelId] = useState('');
@@ -9,6 +11,8 @@ export default function CreateEditTraining() {
   const [progress, setProgress] = useState(0);
   const [complete, setComplete] = useState(false);
   const [people, setPeople] = useState([]);
+  const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const nav = useNavigate();
   const { id } = useParams();
   const editing = Boolean(id);
@@ -25,15 +29,50 @@ export default function CreateEditTraining() {
     }
   }, [editing, id]);
 
-  const save = () => {
-    const data = {
-      personnel_id: personnelId,
-      phase,
-      progress: parseInt(progress),
-      complete
-    };
-    const fn = editing ? updateTraining(id, data) : createTraining(data);
-    fn.then(() => nav('/training'));
+  const save = async () => {
+    setError('');
+    setFieldErrors({});
+
+    // Client-side validation
+    const errors = {};
+    if (!personnelId) {
+      errors.personnel_id = 'Personnel selection is required';
+    }
+    if (!phase || phase.trim() === '') {
+      errors.phase = 'Training phase is required';
+    }
+    if (progress < 0 || progress > 100) {
+      errors.progress = 'Progress must be between 0 and 100';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      const errorMessages = Object.values(errors).join('. ');
+      setError(errorMessages);
+      toast.error(`Please fix the following errors: ${errorMessages}`);
+      return;
+    }
+
+    try {
+      const data = {
+        personnel_id: personnelId,
+        phase,
+        progress: parseInt(progress),
+        complete
+      };
+      if (editing) {
+        await updateTraining(id, data);
+        toast.success('Training record updated successfully!');
+      } else {
+        await createTraining(data);
+        toast.success('Training record created successfully!');
+      }
+      nav('/training');
+    } catch (err) {
+      const errorMsg = getErrorMessage(err);
+      setError(errorMsg);
+      toast.error(`Failed to ${editing ? 'update' : 'create'} training record: ${errorMsg}`);
+    }
   };
 
   return (
@@ -47,11 +86,17 @@ export default function CreateEditTraining() {
                 {editing ? 'Edit' : 'New'} Training Record
               </h2>
               
+              {error && (
+                <div className="alert alert-danger" role="alert">
+                  {error}
+                </div>
+              )}
+
               <div className="mb-3">
                 <label htmlFor="personnelId" className="form-label">Personnel *</label>
                 <select 
                   id="personnelId"
-                  className="form-select" 
+                  className={`form-select ${fieldErrors.personnel_id ? 'is-invalid' : ''}`}
                   value={personnelId} 
                   onChange={e => setPersonnelId(e.target.value)}>
                   <option value="">-- Select Personnel --</option>
@@ -61,6 +106,9 @@ export default function CreateEditTraining() {
                     </option>
                   ))}
                 </select>
+                {fieldErrors.personnel_id && (
+                  <div className="invalid-feedback">{fieldErrors.personnel_id}</div>
+                )}
               </div>
 
               <div className="mb-3">
@@ -68,10 +116,13 @@ export default function CreateEditTraining() {
                 <input 
                   type="text"
                   id="phase" 
-                  className="form-control" 
+                  className={`form-control ${fieldErrors.phase ? 'is-invalid' : ''}`}
                   value={phase} 
                   onChange={e => setPhase(e.target.value)}
                   placeholder="e.g., Phase 1, Phase 2, Initial Training, etc." />
+                {fieldErrors.phase && (
+                  <div className="invalid-feedback">{fieldErrors.phase}</div>
+                )}
                 <small className="form-text text-muted">
                   Enter the training phase or stage (e.g., "Phase 1", "Advanced", "Initial")
                 </small>
@@ -82,11 +133,14 @@ export default function CreateEditTraining() {
                 <input 
                   type="number"
                   id="progress" 
-                  className="form-control" 
+                  className={`form-control ${fieldErrors.progress ? 'is-invalid' : ''}`}
                   value={progress} 
                   min="0" 
                   max="100"
                   onChange={e => setProgress(e.target.value)} />
+                {fieldErrors.progress && (
+                  <div className="invalid-feedback">{fieldErrors.progress}</div>
+                )}
                 <div className="progress mt-2">
                   <div 
                     className="progress-bar" 

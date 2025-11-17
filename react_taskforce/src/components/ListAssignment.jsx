@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { getAllAssignments, deleteAssignment } from '../api/assignments';
 import { manualArchive } from '../api/archiveSchedule';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { exportToCSV, exportToPDF } from '../utils/export';
 
 export default function ListAssignment() {
+  const location = useLocation();
   const [groupedAssignments, setGroupedAssignments] = useState([]);
-  const [activeShift, setActiveShift] = useState('1st');
+  const [activeShift, setActiveShift] = useState(location.state?.shift || '1st');
   const [showArchiveModal, setShowArchiveModal] = useState(false);
   const [archiving, setArchiving] = useState(false);
   const nav = useNavigate();
@@ -139,7 +140,7 @@ export default function ListAssignment() {
             <button className="btn btn-danger btn-sm me-2" onClick={handleExportPDF}>
               <i className="bi bi-file-earmark-pdf"></i> Export PDF
             </button>
-            <button className="btn btn-light" onClick={() => nav('/assignments/new')}>
+            <button className="btn btn-light" onClick={() => nav('/assignments/new', { state: { shift: activeShift } })}>
               <i className="bi bi-plus-circle"></i> Add Assignment
             </button>
           </div>

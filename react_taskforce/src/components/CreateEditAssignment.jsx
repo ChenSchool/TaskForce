@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { getAllTasks } from '../api/tasks';
 import { getAllPersonnel } from '../api/personnel';
 import { getAssignmentById, createAssignment, updateAssignment } from '../api/assignments';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { getErrorMessage } from '../utils/validation';
+import { toast } from 'react-toastify';
 
 export default function CreateEditAssignment() {
   const [taskId, setTaskId] = useState('');
@@ -11,8 +13,10 @@ export default function CreateEditAssignment() {
   const [people, setPeople] = useState([]);
   const [validationError, setValidationError] = useState('');
   const nav = useNavigate();
+  const location = useLocation();
   const { id } = useParams();
   const editing = Boolean(id);
+  const activeShift = location.state?.shift; // Get the shift passed from ListAssignment
 
   useEffect(() => {
     getAllTasks().then(setTasks);
@@ -73,17 +77,65 @@ export default function CreateEditAssignment() {
   };
   const removeLine = idx => setLines(lines.filter((_, i) => i !== idx));
 
-  const save = () => {
-    if (!validateShifts()) {
+  const save = async () => {
+    // Validate task selection
+    if (!taskId) {
+      setValidationError('Please select a task before saving.');
+      toast.error('Task selection is required. Please select a task.');
       return;
     }
-    const data = { task_id: taskId, lines };
-    const fn = editing ? updateAssignment(id, data) : createAssignment(data);
-    fn.then(() => nav('/assignments'));
+
+    // Validate at least one personnel assignment
+    if (lines.length === 0) {
+      setValidationError('Please add at least one personnel assignment.');
+      toast.error('At least one personnel assignment is required.');
+      return;
+    }
+
+    // Validate all lines have both personnel and role
+    for (let i = 0; i < lines.length; i++) {
+      if (!lines[i].personnel_id) {
+        setValidationError(`Row ${i + 1}: Personnel selection is required.`);
+        toast.error(`Row ${i + 1}: Please select a personnel member.`);
+        return;
+      }
+      if (!lines[i].role) {
+        setValidationError(`Row ${i + 1}: Role selection is required.`);
+        toast.error(`Row ${i + 1}: Please select a role for the personnel.`);
+        return;
+      }
+    }
+
+    // Validate shift matching
+    if (!validateShifts()) {
+      toast.error(validationError);
+      return;
+    }
+
+    try {
+      const data = { task_id: taskId, lines };
+      if (editing) {
+        await updateAssignment(id, data);
+        toast.success('Assignment updated successfully!');
+      } else {
+        await createAssignment(data);
+        toast.success('Assignment created successfully!');
+      }
+      nav('/assignments', { state: { shift: activeShift } });
+    } catch (err) {
+      const errorMsg = getErrorMessage(err);
+      setValidationError(errorMsg);
+      toast.error(`Failed to ${editing ? 'update' : 'create'} assignment: ${errorMsg}`);
+    }
   };
 
-  // Filter personnel to show only those matching the task's shift
-  const filteredPeople = taskId ? people.filter(p => p.shift === getTaskShift()) : people;
+  // Filter tasks to show only those matching the active shift (when creating new assignment)
+  const filteredTasks = !editing && activeShift ? tasks.filter(t => t.shift === activeShift) : tasks;
+  
+  // Filter personnel to show only those matching the task's shift OR active shift (when no task selected yet)
+  const filteredPeople = taskId 
+    ? people.filter(p => p.shift === getTaskShift()) 
+    : (!editing && activeShift ? people.filter(p => p.shift === activeShift) : people);
 
   return (
     <div className="container">
@@ -103,10 +155,10 @@ export default function CreateEditAssignment() {
               )}
               
               <div className="mb-3">
-                <label htmlFor="taskId" className="form-label">Task</label>
+                <label htmlFor="taskId" className="form-label">Task {activeShift && `(${activeShift} Shift)`}</label>
                 <select id="taskId" className="form-select" value={taskId} onChange={e => setTaskId(e.target.value)}>
                   <option value="">-- Select Task --</option>
-                  {tasks.map(t => (<option key={t.id} value={t.id}>{t.description} ({t.shift} shift)</option>))}
+                  {filteredTasks.map(t => (<option key={t.id} value={t.id}>{t.description} ({t.shift} shift)</option>))}
                 </select>
               </div>
               <div className="mb-3">
@@ -143,7 +195,7 @@ export default function CreateEditAssignment() {
                   <i className="bi bi-save me-2"></i>
                   Save
                 </button>
-                <button className="btn btn-secondary" onClick={() => nav('/assignments')}>
+                <button className="btn btn-secondary" onClick={() => nav('/assignments', { state: { shift: activeShift } })}>
                   <i className="bi bi-arrow-left me-2"></i>
                   Back to Assignments
                 </button>

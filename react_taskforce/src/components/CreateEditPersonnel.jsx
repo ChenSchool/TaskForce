@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPersonnel, getPersonnelById, updatePersonnel } from '../api/personnel';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getErrorMessage } from '../utils/validation';
+import { toast } from 'react-toastify';
 
 export default function CreateEditPersonnel() {
   const [name, setName] = useState('');
@@ -45,13 +46,15 @@ export default function CreateEditPersonnel() {
     // Client-side validation
     if (!name || name.trim() === '') {
       setNameError('Name is required');
-      setError('Please fill in all required fields');
+      setError('Personnel name is required. Please enter a valid name.');
+      toast.error('Personnel name is required. Please enter a valid name.');
       return;
     }
 
     if (name.length < 2) {
       setNameError('Name must be at least 2 characters');
-      setError('Please fix the validation errors');
+      setError('Personnel name must be at least 2 characters long.');
+      toast.error('Personnel name must be at least 2 characters long.');
       return;
     }
 
@@ -59,12 +62,16 @@ export default function CreateEditPersonnel() {
       const data = { name, specialty, role, shift };
       if (editing) {
         await updatePersonnel(id, data);
+        toast.success('Personnel updated successfully!');
       } else {
         await createPersonnel(data);
+        toast.success('Personnel created successfully!');
       }
       nav('/personnel');
     } catch (err) {
-      setError(getErrorMessage(err));
+      const errorMsg = getErrorMessage(err);
+      setError(errorMsg);
+      toast.error(`Failed to ${editing ? 'update' : 'create'} personnel: ${errorMsg}`);
     }
   };
 

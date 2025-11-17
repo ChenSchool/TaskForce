@@ -126,7 +126,7 @@ export default function ListTask() {
                       {t.status}
                     </span>
                   </td>
-                  <td>{t.date}</td>
+                  <td>{new Date(t.date).toLocaleDateString()}</td>
                   <td>
                     <div className="action-buttons">
                       <button className="btn btn-sm btn-outline-primary" onClick={()=>nav(`/tasks/${t.id}`)}>

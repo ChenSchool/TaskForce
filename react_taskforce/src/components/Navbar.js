@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
+import TaskForceLogo from '../assets/TaskforceLogoRedesign.svg';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
@@ -23,7 +24,12 @@ export default function Navbar() {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark">
       <div className="container-fluid">
-        <NavLink className="navbar-brand" to="/dashboard">
+        <NavLink className="navbar-brand d-flex align-items-center" to="/dashboard">
+          <img 
+            src={TaskForceLogo} 
+            alt="TaskForce Logo" 
+            style={{ height: '40px', marginRight: '10px' }}
+          />
           <strong>TaskForce</strong>
         </NavLink>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">

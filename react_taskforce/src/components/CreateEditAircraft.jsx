@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { createAircraft, getAircraftById, updateAircraft } from '../api/aircraft';
 import { useNavigate, useParams } from 'react-router-dom';
+import { getErrorMessage } from '../utils/validation';
+import { toast } from 'react-toastify';
 
 export default function CreateEditAircraft() {
   const [tail, setTail] = useState('');
+  const [error, setError] = useState('');
+  const [tailError, setTailError] = useState('');
   const nav = useNavigate();
   const { id } = useParams();
   const editing = Boolean(id);
@@ -12,9 +16,39 @@ export default function CreateEditAircraft() {
     if(editing) getAircraftById(id).then(a=>setTail(a.tail_number));
   }, [editing, id]);
 
-  const save = () => {
-    const fn = editing ? updateAircraft(id, { tail_number: tail }) : createAircraft({ tail_number: tail });
-    fn.then(()=>nav('/aircraft'));
+  const save = async () => {
+    setError('');
+    setTailError('');
+
+    // Client-side validation
+    if (!tail || tail.trim() === '') {
+      setTailError('Tail number is required');
+      setError('Aircraft tail number is required. Please enter a valid tail number.');
+      toast.error('Aircraft tail number is required. Please enter a valid tail number.');
+      return;
+    }
+
+    if (tail.length < 2) {
+      setTailError('Tail number must be at least 2 characters');
+      setError('Aircraft tail number must be at least 2 characters long.');
+      toast.error('Aircraft tail number must be at least 2 characters long.');
+      return;
+    }
+
+    try {
+      if (editing) {
+        await updateAircraft(id, { tail_number: tail });
+        toast.success('Aircraft updated successfully!');
+      } else {
+        await createAircraft({ tail_number: tail });
+        toast.success('Aircraft created successfully!');
+      }
+      nav('/aircraft');
+    } catch (err) {
+      const errorMsg = getErrorMessage(err);
+      setError(errorMsg);
+      toast.error(`Failed to ${editing ? 'update' : 'create'} aircraft: ${errorMsg}`);
+    }
   };
 
   return (
@@ -27,16 +61,27 @@ export default function CreateEditAircraft() {
                 <i className="bi bi-airplane me-2"></i>
                 {editing ? 'Edit' : 'New'} Aircraft
               </h2>
+              
+              {error && (
+                <div className="alert alert-danger" role="alert">
+                  {error}
+                </div>
+              )}
+
               <div className="mb-3">
-                <label htmlFor="tailNumber" className="form-label">Tail Number</label>
+                <label htmlFor="tailNumber" className="form-label">Tail Number *</label>
                 <input 
                   type="text"
                   id="tailNumber"
-                  className="form-control" 
+                  className={`form-control ${tailError ? 'is-invalid' : ''}`}
                   value={tail} 
-                  onChange={e=>setTail(e.target.value)} 
+                  onChange={e=>setTail(e.target.value.toUpperCase())} 
                   placeholder="Enter aircraft tail number"
+                  style={{ textTransform: 'uppercase' }}
                 />
+                {tailError && (
+                  <div className="invalid-feedback">{tailError}</div>
+                )}
               </div>
               <div className="d-grid gap-2">
                 <button className="btn btn-primary" onClick={save} disabled={!tail}>
