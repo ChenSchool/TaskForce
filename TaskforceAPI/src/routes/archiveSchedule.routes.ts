@@ -10,6 +10,9 @@ const router = Router();
 // All routes require authentication
 router.use(authenticate);
 
+// Scheduler status - All authenticated users can check
+router.get('/status', ctrl.getSchedulerStatus);
+
 // Schedule management - Manager and Supervisor only
 router.get('/schedules', authorize('Manager', 'Supervisor'), ctrl.getAllSchedules);
 router.get('/schedules/:id', authorize('Manager', 'Supervisor'), validate(idParamValidation), ctrl.getScheduleById);

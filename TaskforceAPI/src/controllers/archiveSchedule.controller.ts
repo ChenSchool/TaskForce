@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth.middleware';
 import * as archiveScheduleDao from '../dao/archiveSchedule.dao';
 import { ArchiveSchedule } from '../models/archiveSchedule.model';
+import { getActiveScheduleCount } from '../services/archiveScheduler.service';
 
 // Get all archive schedules
 export const getAllSchedules = async (req: AuthRequest, res: Response): Promise<void> => {
@@ -202,5 +203,41 @@ export const getArchivedAssignments = async (req: AuthRequest, res: Response): P
   } catch (error) {
     console.error('[archiveSchedule.controller][getArchivedAssignments][Error]', error);
     res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Get scheduler status - for diagnostics
+export const getSchedulerStatus = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const timezone = process.env.TZ || 'America/Phoenix';
+    const currentTime = new Date().toLocaleString('en-US', { timeZone: timezone, hour12: false });
+    const activeJobCount = getActiveScheduleCount();
+    const enabledSchedules = await archiveScheduleDao.getEnabledSchedules();
+
+    res.json({
+      status: 'running',
+      timezone,
+      currentTime,
+      serverTime: new Date().toISOString(),
+      activeJobCount,
+      enabledScheduleCount: enabledSchedules.length,
+      schedules: enabledSchedules.map(s => ({
+        id: s.id,
+        shift: s.shift,
+        scheduleTime: s.schedule_time,
+        enabled: s.enabled,
+        nextRun: `Today at ${s.schedule_time} ${timezone}`
+      })),
+      message: activeJobCount > 0 
+        ? `Scheduler is running with ${activeJobCount} active job(s)` 
+        : 'Scheduler is running but no jobs are scheduled. Enable a schedule to start automatic archiving.'
+    });
+  } catch (error) {
+    console.error('[archiveSchedule.controller][getSchedulerStatus][Error]', error);
+    res.status(500).json({ 
+      status: 'error',
+      message: 'Failed to get scheduler status',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 };

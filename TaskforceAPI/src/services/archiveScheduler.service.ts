@@ -4,6 +4,21 @@ import * as archiveScheduleDao from '../dao/archiveSchedule.dao';
 let scheduledJobs: Map<number, ScheduledTask> = new Map();
 
 /**
+ * Get the timezone for scheduling (defaults to America/Los Angeles for Pacific Time)
+ */
+const getTimezone = (): string => {
+  return process.env.TZ || 'America/Los Angeles';
+};
+
+/**
+ * Get current time in the configured timezone
+ */
+const getCurrentTime = (): string => {
+  const tz = getTimezone();
+  return new Date().toLocaleString('en-US', { timeZone: tz, hour12: false });
+};
+
+/**
  * Convert database time (HH:MM:SS) to cron expression
  * Example: "14:30:00" => "30 14 * * *" (runs at 2:30 PM every day)
  */
@@ -17,15 +32,20 @@ const timeToCronExpression = (timeString: string): string => {
  */
 const executeArchive = async (scheduleId: number, shift: string) => {
   try {
-    console.log(`[Archive Job ${scheduleId}] Starting scheduled archive for ${shift} shift...`);
+    const now = getCurrentTime();
+    console.log('\n' + '='.repeat(60));
+    console.log(`[Archive Job ${scheduleId}] EXECUTING at ${now}`);
+    console.log(`[Archive Job ${scheduleId}] Shift: ${shift}`);
+    console.log('='.repeat(60));
 
     // Get all assignments for this shift that haven't been archived
     const assignmentsToArchive = await archiveScheduleDao.getAssignmentsToArchive(shift);
 
-    console.log(`[Archive Job ${scheduleId}] Found ${assignmentsToArchive.length} assignments to archive for ${shift} shift`);
+    console.log(`[Archive Job ${scheduleId}] Found ${assignmentsToArchive.length} assignments to archive`);
 
     if (assignmentsToArchive.length === 0) {
       console.log(`[Archive Job ${scheduleId}] No assignments to archive for ${shift} shift`);
+      console.log('='.repeat(60) + '\n');
       return;
     }
 
@@ -49,9 +69,11 @@ const executeArchive = async (scheduleId: number, shift: string) => {
       schedule_id: scheduleId
     });
 
-    console.log(`[Archive Job ${scheduleId}] Successfully archived ${assignmentsToArchive.length} assignments for ${shift} shift`);
+    console.log(`[Archive Job ${scheduleId}] SUCCESS! Archived ${assignmentsToArchive.length} assignments`);
+    console.log('='.repeat(60) + '\n');
   } catch (error) {
-    console.error(`[Archive Job ${scheduleId}] Error during scheduled archive:`, error);
+    console.error(`[Archive Job ${scheduleId}] ERROR during scheduled archive:`, error);
+    console.log('='.repeat(60) + '\n');
   }
 };
 
@@ -81,12 +103,15 @@ const executeCleanup = async () => {
  * Initialize cleanup job to run daily at 3 AM
  */
 const initializeCleanupJob = () => {
-  // Run daily at 3:00 AM
+  const timezone = getTimezone();
+  // Run daily at 3:00 AM in the configured timezone
   const cleanupTask = cron.schedule('0 3 * * *', () => {
     executeCleanup();
+  }, {
+    timezone: timezone
   });
 
-  console.log('[Archive Cleanup] Initialized daily cleanup job (runs at 3:00 AM)');
+  console.log(`[Archive Cleanup] Initialized daily cleanup job (3:00 AM ${timezone})`);
 
   return cleanupTask;
 };
@@ -96,7 +121,14 @@ const initializeCleanupJob = () => {
  */
 export const initializeArchiveSchedules = async () => {
   try {
-    console.log('[Archive Scheduler] Initializing archive schedules...');
+    const timezone = getTimezone();
+    const now = getCurrentTime();
+    
+    console.log('\n' + '='.repeat(60));
+    console.log('[Archive Scheduler] INITIALIZING...');
+    console.log(`[Archive Scheduler] Current Time: ${now}`);
+    console.log(`[Archive Scheduler] Timezone: ${timezone}`);
+    console.log('='.repeat(60));
 
     // Stop all existing scheduled jobs
     stopAllSchedules();
@@ -108,7 +140,9 @@ export const initializeArchiveSchedules = async () => {
     const schedules = await archiveScheduleDao.getEnabledSchedules();
 
     if (schedules.length === 0) {
-      console.log('[Archive Scheduler] No enabled schedules found');
+      console.log('[Archive Scheduler] No enabled schedules found in database');
+      console.log('[Archive Scheduler] Create schedules in the UI to enable automatic archiving');
+      console.log('='.repeat(60) + '\n');
       return;
     }
 
@@ -119,9 +153,15 @@ export const initializeArchiveSchedules = async () => {
       }
     }
 
-    console.log(`[Archive Scheduler] Initialized ${schedules.length} archive schedule(s)`);
+    console.log('\n' + '='.repeat(60));
+    console.log(`[Archive Scheduler] SUCCESS!`);
+    console.log(`[Archive Scheduler] ${schedules.length} schedule(s) are now active`);
+    console.log('[Archive Scheduler] Scheduler is running and waiting for scheduled times...');
+    console.log('='.repeat(60) + '\n');
   } catch (error) {
-    console.error('[Archive Scheduler] Error initializing schedules:', error);
+    console.error('\n' + '='.repeat(60));
+    console.error('[Archive Scheduler] ERROR initializing schedules:', error);
+    console.error('='.repeat(60) + '\n');
   }
 };
 
@@ -142,17 +182,22 @@ export const scheduleJob = (scheduleId: number, scheduleTime: string, shift: str
       return;
     }
 
-    // Create and start the scheduled task
+    const timezone = getTimezone();
+
+    // Create and start the scheduled task with timezone
     const task = cron.schedule(cronExpression, () => {
       executeArchive(scheduleId, shift);
+    }, {
+      timezone: timezone
     });
 
     // Store the task reference
     scheduledJobs.set(scheduleId, task);
 
-    console.log(`[Archive Scheduler] Scheduled job ${scheduleId} for ${shift} shift at ${scheduleTime} (${cronExpression})`);
+    console.log(`[Archive Scheduler] Job #${scheduleId} scheduled`);
+    console.log(`                    Shift: ${shift} | Time: ${scheduleTime} (${timezone})`);
   } catch (error) {
-    console.error(`[Archive Scheduler] Error scheduling job ${scheduleId}:`, error);
+    console.error(`[Archive Scheduler] ERROR scheduling job ${scheduleId}:`, error);
   }
 };
 
