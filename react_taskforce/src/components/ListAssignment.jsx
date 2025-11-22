@@ -178,8 +178,8 @@ export default function ListAssignment() {
           <table className="table">
             <thead>
               <tr>
-                <th>Task</th>
                 <th>Aircraft</th>
+                <th>Task</th>
                 <th>Personnel</th>
                 <th>Actions</th>
               </tr>
@@ -187,8 +187,8 @@ export default function ListAssignment() {
             <tbody>
               {filteredAssignments.map(g => (
                 <tr key={g.task_id}>
-                  <td>{g.task_description}</td>
                   <td>{g.aircraft_tail}</td>
+                  <td>{g.task_description}</td>
                   <td>
                     {g.personnel.map((p, idx) => (
                       <div key={idx}>
