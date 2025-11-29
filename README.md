@@ -322,7 +322,7 @@ ISC License
 
 ## Author
 
-Grand Canyon University - CST-452 Senior Project II
+Christian Contreras - CST-452 Senior Project
 
 ## Acknowledgments
 
