@@ -1,7 +1,16 @@
+/**
+ * ProtectedRoute component wrapper.
+ * Provides authentication and role-based authorization for route access with loading and error states.
+ */
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+/**
+ * Route wrapper that enforces authentication and optional role-based access control.
+ * Shows loading spinner during auth check, redirects to login if not authenticated,
+ * and displays access denied message if user lacks required role.
+ */
 export default function ProtectedRoute({ children, roles }) {
   const { user, loading } = useAuth();
 

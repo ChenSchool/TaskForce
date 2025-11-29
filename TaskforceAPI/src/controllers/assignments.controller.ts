@@ -1,9 +1,19 @@
+/**
+ * Assignments Controller
+ * 
+ * Handles HTTP requests for assignment management including CRUD operations,
+ * task-personnel associations, and multi-line assignment creation.
+ */
+
 import { Request, RequestHandler, Response } from "express";
 import { Assignment } from "../models/assignments.model";
 import * as AssignmentDao from "../dao/assignments.dao";
 import { OkPacket } from "mysql";
 
-// This controller handles the CRUD operations for assignments
+/**
+ * Get all assignments
+ * @route GET /api/assignments
+ */
 export const getAll: RequestHandler = async (req: Request, res: Response) => {
   try {
     const assignments = await AssignmentDao.getAllAssignments();
@@ -12,8 +22,12 @@ export const getAll: RequestHandler = async (req: Request, res: Response) => {
     console.error("[assignments.controller][GetAllAssignments][Error]", error);
     res.status(500).json({ error: "Failed to fetch assignments" });
   }
-}; // Get all assignments
+};
 
+/**
+ * Get assignment by ID (returns all assignments for the task)
+ * @route GET /api/assignments/:id
+ */
 export const getById: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const assignmentId = Number(req.params.id);
@@ -46,8 +60,12 @@ export const getById: RequestHandler = async (req: Request, res: Response): Prom
     console.error("[assignments.controller][GetAssignmentById][Error]", error);
     res.status(500).json({ error: "Failed to fetch assignment" });
   }
-}; // Get assignment by id
+};
 
+/**
+ * Create new assignment(s) for a task with multiple personnel
+ * @route POST /api/assignments
+ */
 export const create: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const { task_id, lines } = req.body;
@@ -76,8 +94,12 @@ export const create: RequestHandler = async (req: Request, res: Response): Promi
     console.error("[assignments.controller][CreateAssignment][Error]", error);
     res.status(500).json({ error: "Failed to create assignment" });
   }
-}; // Create new assignment
+};
 
+/**
+ * Update assignment by replacing all assignments for a task
+ * @route PUT /api/assignments/:id
+ */
 export const update: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const assignmentId = Number(req.params.id);
@@ -118,8 +140,12 @@ export const update: RequestHandler = async (req: Request, res: Response): Promi
     console.error("[assignments.controller][UpdateAssignment][Error]", error);
     res.status(500).json({ error: "Failed to update assignment" });
   }
-}; // Update assignment by id
+};
 
+/**
+ * Delete assignment by ID
+ * @route DELETE /api/assignments/:id
+ */
 export const remove: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const assignmentId = Number(req.params.id);
@@ -135,8 +161,12 @@ export const remove: RequestHandler = async (req: Request, res: Response): Promi
     console.error("[assignments.controller][DeleteAssignment][Error]", error);
     res.status(500).json({ error: "Failed to delete assignment" });
   }
-}; // Delete assignment by id
+};
 
+/**
+ * Get all assignments for a specific task
+ * @route GET /api/assignments/task/:taskId
+ */
 export const getByTaskId: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const taskId = Number(req.params.taskId);
@@ -160,8 +190,12 @@ export const getByTaskId: RequestHandler = async (req: Request, res: Response): 
     console.error("[assignments.controller][GetByTaskId][Error]", error);
     res.status(500).json({ error: "Failed to fetch assignments for task" });
   }
-}; // Get all assignments for a task
+};
 
+/**
+ * Get all assignments for a specific personnel member
+ * @route GET /api/assignments/personnel/:personnelId
+ */
 export const getByPersonnelId: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const personnelId = Number(req.params.personnelId);
@@ -172,8 +206,12 @@ export const getByPersonnelId: RequestHandler = async (req: Request, res: Respon
     console.error("[assignments.controller][GetByPersonnelId][Error]", error);
     res.status(500).json({ error: "Failed to fetch assignments for personnel" });
   }
-}; // Get all assignments for a personnel member
+};
 
+/**
+ * Delete all assignments for a specific personnel member
+ * @route DELETE /api/assignments/personnel/:personnelId
+ */
 export const deleteByPersonnelId: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const personnelId = Number(req.params.personnelId);

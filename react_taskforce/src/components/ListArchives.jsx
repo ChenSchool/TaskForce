@@ -1,7 +1,18 @@
+/**
+ * ListArchives Component
+ * 
+ * Displays archived assignments with filtering and export capabilities.
+ * Provides date range filtering, shift filtering, and CSV/PDF export.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { getArchivedAssignments } from '../api/archiveSchedule';
 import { exportToCSV, exportToPDF } from '../utils/export';
 
+/**
+ * Component for viewing and filtering archived assignment records.
+ * Features date range filtering, shift filtering, and data export options.
+ */
 export default function ListArchives() {
   const [archivedAssignments, setArchivedAssignments] = useState([]);
   const [loading, setLoading] = useState(true);

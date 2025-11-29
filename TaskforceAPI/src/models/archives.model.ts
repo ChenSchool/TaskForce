@@ -1,4 +1,7 @@
-// Archives model for storing archived data
+/**
+ * Archive model type definitions.
+ * Defines archive snapshot entities for storing historical data with metadata.
+ */
 export interface Archive {
   id?: number;
   snapshot_date?: string;

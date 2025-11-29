@@ -1,3 +1,7 @@
+/**
+ * Users SQL queries module.
+ * Contains parameterized SQL queries for user management, authentication, and refresh token operations.
+ */
 export const usersQueries = {
   getAllUsers: `
     SELECT id, username, name, email, role, created_at, updated_at, last_login, is_active, dark_mode

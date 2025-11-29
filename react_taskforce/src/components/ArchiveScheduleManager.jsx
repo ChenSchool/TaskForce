@@ -1,9 +1,21 @@
+/**
+ * ArchiveScheduleManager Component
+ * 
+ * Manages automated archive schedules and displays archive execution logs.
+ * Restricted to Manager and Supervisor roles. Allows creating, editing,
+ * enabling/disabling, and deleting archive schedules.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getAllSchedules, createSchedule, updateSchedule, deleteSchedule, getArchiveLogs } from '../api/archiveSchedule';
 import { useAuth } from '../context/AuthContext';
 
+/**
+ * Component for managing automated archive schedules with role-based access control.
+ * Provides CRUD operations for schedules and displays historical archive logs.
+ */
 export default function ArchiveScheduleManager() {
   const [schedules, setSchedules] = useState([]);
   const [logs, setLogs] = useState([]);

@@ -1,5 +1,7 @@
-// src/queries/assignments.queries.ts
-
+/**
+ * Assignments SQL queries module.
+ * Contains parameterized SQL queries for assignment CRUD operations with multi-table joins for task, aircraft, and personnel details.
+ */
 export const assignmentQueries = {
   
   getAllAssignments: `

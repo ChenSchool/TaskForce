@@ -1,3 +1,7 @@
+/**
+ * Navigation bar component.
+ * Provides site-wide navigation, user info display, dark mode toggle, and logout functionality with role-based menu items.
+ */
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -6,11 +10,16 @@ import TaskForceLogo from '../assets/TaskforceLogoRedesign.svg';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
-
+/**
+ * Responsive navigation bar with role-based menu visibility and theme toggle.
+ */
 export default function Navbar() {
   const { user, logout, hasRole, darkMode, toggleDarkMode } = useAuth();
   const navigate = useNavigate();
 
+  /**
+   * Handle user logout with notification and redirect.
+   */
   const handleLogout = async () => {
     await logout();
     toast.success('Logged out successfully. See you next time!');

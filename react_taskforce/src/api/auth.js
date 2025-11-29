@@ -1,5 +1,12 @@
+/**
+ * Authentication API service module.
+ * Handles all authentication-related HTTP requests including login, registration, logout, token refresh, and user profile retrieval.
+ */
 import { API_BASE } from '../dataSource';
 
+/**
+ * Authenticate user with username and password.
+ */
 export const login = async (username, password) => {
   const response = await fetch(`${API_BASE}/auth/login`, {
     method: 'POST',
@@ -15,6 +22,9 @@ export const login = async (username, password) => {
   return response.json();
 };
 
+/**
+ * Register a new user account.
+ */
 export const register = async (userData) => {
   const response = await fetch(`${API_BASE}/auth/register`, {
     method: 'POST',
@@ -30,6 +40,9 @@ export const register = async (userData) => {
   return response.json();
 };
 
+/**
+ * Logout user and invalidate refresh token.
+ */
 export const logout = async (refreshToken) => {
   const token = localStorage.getItem('accessToken');
   
@@ -45,6 +58,9 @@ export const logout = async (refreshToken) => {
   return response.json();
 };
 
+/**
+ * Refresh access token using refresh token.
+ */
 export const refreshToken = async (refreshToken) => {
   const response = await fetch(`${API_BASE}/auth/refresh`, {
     method: 'POST',
@@ -59,6 +75,9 @@ export const refreshToken = async (refreshToken) => {
   return response.json();
 };
 
+/**
+ * Get the current authenticated user's profile information.
+ */
 export const getCurrentUser = async () => {
   const token = localStorage.getItem('accessToken');
   

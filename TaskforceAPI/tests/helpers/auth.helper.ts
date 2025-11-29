@@ -7,24 +7,28 @@ export interface TestTokens {
 
 /**
  * Get authentication tokens for testing
- * NOTE: Update the credentials based on your test database
+ * Uses seeded test data from testDb.ts
  */
 export async function getAuthTokens(app: any): Promise<TestTokens> {
-  // Login as admin (Manager role)
+  // Login as admin (Manager role) - seeded in testDb
   const adminResponse = await request(app)
     .post('/auth/login')
     .send({
-      username: 'admin',  
-      password: 'admin123' 
+      username: 'testadmin',  
+      password: 'TestPass123!' 
     });
 
-  // Login as supervisor
+  // Login as supervisor - seeded in testDb
   const supervisorResponse = await request(app)
     .post('/auth/login')
     .send({
-      username: 'supervisor', 
-      password: 'password'    
+      username: 'testsupervisor', 
+      password: 'TestPass123!'    
     });
+
+  if (!adminResponse.body.accessToken || !supervisorResponse.body.accessToken) {
+    throw new Error('Failed to get auth tokens. Check test database seed data.');
+  }
 
   return {
     adminToken: adminResponse.body.accessToken || adminResponse.body.token,

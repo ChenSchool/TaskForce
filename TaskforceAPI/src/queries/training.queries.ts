@@ -1,4 +1,7 @@
-// Training queries
+/**
+ * Training SQL queries module.
+ * Contains parameterized SQL queries for training record management with personnel joins and statistics.
+ */
 export const trainingQueries = {
   
   getAllTraining: `

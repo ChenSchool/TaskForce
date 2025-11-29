@@ -4,6 +4,9 @@ module.exports = {
   roots: ['<rootDir>/tests'],
   testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts'],
   moduleFileExtensions: ['ts', 'js', 'json'],
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+  globalSetup: '<rootDir>/tests/globalSetup.ts',
+  globalTeardown: '<rootDir>/tests/globalTeardown.ts',
   collectCoverageFrom: [
     'src/**/*.ts',
     '!src/**/*.d.ts',
@@ -12,7 +15,7 @@ module.exports = {
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
   verbose: true,
-  testTimeout: 10000,
+  testTimeout: 30000,
   detectOpenHandles: false,
   forceExit: true,
   

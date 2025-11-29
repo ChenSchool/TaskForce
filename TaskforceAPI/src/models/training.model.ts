@@ -1,4 +1,7 @@
-// Training model for personnel training records
+/**
+ * Training model type definitions.
+ * Defines training record entities with progress tracking and personnel associations.
+ */
 export interface Training {
   id?: number;
   personnel_id: number;

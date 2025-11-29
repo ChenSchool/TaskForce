@@ -1,3 +1,7 @@
+/**
+ * ListUsers component.
+ * Displays user accounts with role-based access control, assignment checking before deletion, and role badges.
+ */
 import React, { useState, useEffect } from 'react';
 import { getAllUsers, deactivateUser } from '../api/users';
 import { getAssignmentsByPersonnelId, deleteAssignmentsByPersonnelId } from '../api/assignments';
@@ -5,6 +9,9 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+/**
+ * User management list component with delete protection for users with active assignments.
+ */
 export default function ListUsers() {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState('');

@@ -1,9 +1,16 @@
+/**
+ * Users controller module.
+ * Handles HTTP request logic for user management operations including CRUD, authentication checks, and authorization.
+ */
 import { Response } from 'express';
 import * as UsersDao from '../dao/users.dao';
 import * as AuthUtils from '../utils/auth.utils';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { RegisterRequest } from '../models/user.model';
 
+/**
+ * Create a new user account with password hashing and duplicate validation.
+ */
 export const createUser = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const data: RegisterRequest = req.body;
@@ -42,8 +49,9 @@ export const createUser = async (req: AuthRequest, res: Response): Promise<void>
       return;
     }
 
-    // Return the created user (without generating tokens)
+    // Return the created user with id at top level for compatibility
     res.status(201).json({
+      id: userId,
       message: 'User created successfully',
       user
     });
@@ -53,6 +61,9 @@ export const createUser = async (req: AuthRequest, res: Response): Promise<void>
   }
 };
 
+/**
+ * Fetch all users from the database.
+ */
 export const getAll = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const users = await UsersDao.getAllUsers();
@@ -63,6 +74,9 @@ export const getAll = async (req: AuthRequest, res: Response): Promise<void> => 
   }
 };
 
+/**
+ * Fetch a single user by their ID.
+ */
 export const getById = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const id = parseInt(req.params.id);
@@ -80,6 +94,9 @@ export const getById = async (req: AuthRequest, res: Response): Promise<void> =>
   }
 };
 
+/**
+ * Update user profile information with permission checks.
+ */
 export const update = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const id = parseInt(req.params.id);
@@ -110,6 +127,9 @@ export const update = async (req: AuthRequest, res: Response): Promise<void> => 
   }
 };
 
+/**
+ * Change user password with current password verification.
+ */
 export const changePassword = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const id = parseInt(req.params.id);
@@ -157,6 +177,9 @@ export const changePassword = async (req: AuthRequest, res: Response): Promise<v
   }
 };
 
+/**
+ * Update user's dark mode preference.
+ */
 export const updateDarkMode = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const id = parseInt(req.params.id);
@@ -187,6 +210,9 @@ export const updateDarkMode = async (req: AuthRequest, res: Response): Promise<v
   }
 };
 
+/**
+ * Delete a user account and associated refresh tokens.
+ */
 export const deactivate = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const id = parseInt(req.params.id);

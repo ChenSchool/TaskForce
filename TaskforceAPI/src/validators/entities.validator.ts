@@ -1,3 +1,10 @@
+/**
+ * Entity Validation Middleware
+ * 
+ * Contains express-validator rules for all entity types (aircraft, tasks, personnel,
+ * training, assignments, archives). Validates request body and params for CRUD operations.
+ */
+
 import { body, param } from 'express-validator';
 
 /**
@@ -16,24 +23,24 @@ export const aircraftValidation = [
  */
 export const taskValidation = [
   body('aircraft_id')
-    .notEmpty().withMessage('Aircraft ID is required')
+    .notEmpty().withMessage('Aircraft selection is required')
     .isInt({ min: 1 }).withMessage('Aircraft ID must be a positive integer'),
   
   body('description')
     .trim()
-    .notEmpty().withMessage('Description is required')
+    .notEmpty().withMessage('Description is required and cannot be empty')
     .isLength({ min: 3, max: 500 }).withMessage('Description must be between 3 and 500 characters'),
   
   body('status')
-    .notEmpty().withMessage('Status is required')
-    .isIn(['Incomplete', 'Complete']).withMessage('Status must be Incomplete or Complete'),
+    .optional()
+    .isString().withMessage('Status must be a string'),
   
   body('date')
-    .notEmpty().withMessage('Date is required')
+    .notEmpty().withMessage('Date is required for task creation')
     .isISO8601().withMessage('Date must be in ISO 8601 format (YYYY-MM-DD)'),
   
   body('shift')
-    .notEmpty().withMessage('Shift is required')
+    .notEmpty().withMessage('Shift selection is required')
     .isIn(['1st', '2nd', '3rd']).withMessage('Shift must be 1st, 2nd, or 3rd')
 ];
 
@@ -54,9 +61,9 @@ export const personnelValidation = [
     .matches(/^[a-zA-Z0-9\s\-&'.]+$/).withMessage('Role can only contain letters, numbers, spaces, and common punctuation (&, -, \', .)'),
   
   body('specialty')
-    .optional()
     .trim()
-    .isLength({ max: 100 }).withMessage('Specialty must be less than 100 characters')
+    .notEmpty().withMessage('Specialty is required')
+    .isLength({ min: 1, max: 100 }).withMessage('Specialty must be between 1 and 100 characters')
     .matches(/^[a-zA-Z0-9\s\-&'.,/]+$/).withMessage('Specialty can only contain letters, numbers, spaces, and common punctuation (&, -, \', ., ,, /)'),
   
   body('shift')
@@ -101,11 +108,11 @@ export const trainingValidation = [
     .matches(/^[a-zA-Z0-9\s\-&'.,/]+$/).withMessage('Phase can only contain letters, numbers, spaces, and common punctuation (&, -, \', ., ,, /)'),
   
   body('progress')
-    .notEmpty().withMessage('Progress is required')
+    .exists().withMessage('Progress is required')
     .isInt({ min: 0, max: 100 }).withMessage('Progress must be an integer between 0 and 100'),
   
   body('complete')
-    .notEmpty().withMessage('Complete status is required')
+    .exists().withMessage('Complete status is required')
     .isBoolean().withMessage('Complete must be true or false')
 ];
 

@@ -1,3 +1,11 @@
+/**
+ * Register Component
+ * 
+ * User registration form with comprehensive validation for username, password,
+ * email, and role selection. Includes real-time validation feedback and
+ * administrator-level user creation capabilities.
+ */
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -9,6 +17,11 @@ import {
   isValidEmail 
 } from '../utils/validation';
 
+/**
+ * Creates a new user via API
+ * @param {Object} userData - User data to create
+ * @returns {Promise<Object>} Created user data
+ */
 const createUser = async (userData) => {
   const token = localStorage.getItem('accessToken');
   const response = await fetch(`${API_BASE}/users`, {
@@ -270,7 +283,7 @@ export default function CreateUser() {
                     <div className="invalid-feedback">{fieldErrors.password}</div>
                   )}
                   {passwordStrength && !fieldErrors.password && (
-                    <div className="text-success small mt-1">✓ Password strength: Good</div>
+                    <div className="text-success small mt-1">Password strength: Good</div>
                   )}
                   <small className="form-text text-muted">
                     At least 6 characters with uppercase, lowercase, and number
@@ -292,7 +305,7 @@ export default function CreateUser() {
                     <div className="invalid-feedback">{fieldErrors.confirmPassword}</div>
                   )}
                   {formData.confirmPassword && !fieldErrors.confirmPassword && (
-                    <div className="text-success small mt-1">✓ Passwords match</div>
+                    <div className="text-success small mt-1">Passwords match</div>
                   )}
                 </div>
 

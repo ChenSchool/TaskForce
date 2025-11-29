@@ -1,6 +1,11 @@
+/**
+ * Authentication and Authorization Middleware
+ * Validates JWT tokens and enforces role-based access control
+ */
 import { Request, Response, NextFunction } from 'express';
 import { verifyAccessToken } from '../utils/auth.utils';
 
+// Extend Express Request with authenticated user data
 export interface AuthRequest extends Request {
   user?: {
     id: number;
@@ -10,6 +15,10 @@ export interface AuthRequest extends Request {
   };
 }
 
+/**
+ * Authenticate middleware
+ * Verifies JWT token from Authorization header and attaches user to request
+ */
 export const authenticate = (req: AuthRequest, res: Response, next: NextFunction): void => {
   const authHeader = req.headers.authorization;
   
@@ -30,6 +39,11 @@ export const authenticate = (req: AuthRequest, res: Response, next: NextFunction
   next();
 };
 
+/**
+ * Authorize middleware factory
+ * Creates middleware that checks if user has required role(s)
+ * @param roles - Allowed roles for the route
+ */
 export const authorize = (...roles: string[]) => {
   return (req: AuthRequest, res: Response, next: NextFunction): void => {
     if (!req.user) {

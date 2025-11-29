@@ -1,9 +1,16 @@
+/**
+ * CreateEditPersonnel component.
+ * Form for creating or editing personnel records with name, specialty, role, and shift selection.
+ */
 import React, { useState, useEffect } from 'react';
 import { createPersonnel, getPersonnelById, updatePersonnel } from '../api/personnel';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getErrorMessage } from '../utils/validation';
 import { toast } from 'react-toastify';
 
+/**
+ * Personnel form component with real-time name validation and dropdown selections for specialty, role, and shift.
+ */
 export default function CreateEditPersonnel() {
   const [name, setName] = useState('');
   const [specialty, setSpecialty] = useState('A&P');

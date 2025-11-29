@@ -1,9 +1,16 @@
+/**
+ * Login page component.
+ * Provides user authentication form with username/password validation, error handling, and toast notifications.
+ */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getErrorMessage, validateUsername } from '../utils/validation';
 import { toast } from 'react-toastify';
 
+/**
+ * Login form component with real-time username validation and authentication.
+ */
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -13,6 +20,9 @@ export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
+  /**
+   * Handle username input changes with real-time validation feedback.
+   */
   const handleUsernameChange = (e) => {
     const value = e.target.value;
     setUsername(value);
@@ -25,6 +35,9 @@ export default function Login() {
     }
   };
 
+  /**
+   * Handle form submission with validation and authentication.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');

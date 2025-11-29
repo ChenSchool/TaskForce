@@ -8,21 +8,34 @@ import {
   isValidEmail 
 } from '../utils/validation';
 
+/**
+ * EditUser component - Allows editing user profile information and changing passwords
+ * Handles form validation, API calls, and user feedback
+ */
 export default function EditUser() {
+  // Get user ID from URL parameters
   const { id } = useParams();
+  
+  // Form state for user information
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     role: 'Task Viewer'
   });
+  
+  // Original user data from API
   const [userData, setUserData] = useState(null);
+  
+  // Error and success message states
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [success, setSuccess] = useState('');
+  
+  // Loading states for async operations
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   
-  // Password change section
+  // Password change form states
   const [showPasswordChange, setShowPasswordChange] = useState(false);
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -34,12 +47,17 @@ export default function EditUser() {
   
   const navigate = useNavigate();
 
+  /**
+   * Load user data on component mount
+   * Fetches user details and populates the form
+   */
   useEffect(() => {
     const loadUser = async () => {
       try {
         setLoadingData(true);
         const user = await getUserById(id);
         setUserData(user);
+        // Populate form with existing user data
         setFormData({
           name: user.name || '',
           email: user.email || '',
@@ -55,6 +73,10 @@ export default function EditUser() {
     loadUser();
   }, [id]);
 
+  /**
+   * Handle changes to user information form fields
+   * Performs real-time validation on email input
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -62,7 +84,7 @@ export default function EditUser() {
       [name]: value
     });
 
-    // Real-time validation
+    // Real-time email validation
     const newErrors = { ...fieldErrors };
 
     if (name === 'email' && value) {
@@ -76,6 +98,10 @@ export default function EditUser() {
     setFieldErrors(newErrors);
   };
 
+  /**
+   * Handle changes to password form fields
+   * Validates password strength and confirms passwords match
+   */
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
     setPasswordData({
@@ -83,9 +109,9 @@ export default function EditUser() {
       [name]: value
     });
 
-    // Real-time validation for password
     const newErrors = { ...passwordErrors };
 
+    // Validate new password strength
     if (name === 'newPassword') {
       const validation = validatePassword(value);
       setPasswordStrength(validation.message);
@@ -95,7 +121,7 @@ export default function EditUser() {
         delete newErrors.newPassword;
       }
 
-      // Check password match
+      // Check if passwords match when new password changes
       if (passwordData.confirmPassword && value !== passwordData.confirmPassword) {
         newErrors.confirmPassword = 'Passwords do not match';
       } else {
@@ -103,6 +129,7 @@ export default function EditUser() {
       }
     }
 
+    // Validate password confirmation matches
     if (name === 'confirmPassword' && value) {
       if (value !== passwordData.newPassword) {
         newErrors.confirmPassword = 'Passwords do not match';
@@ -114,14 +141,17 @@ export default function EditUser() {
     setPasswordErrors(newErrors);
   };
 
+  /**
+   * Handle user information form submission
+   * Validates form data and updates user via API
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
 
-    // Client-side validation
+    // Validate email format
     const errors = {};
-
     if (formData.email && !isValidEmail(formData.email)) {
       errors.email = 'Please enter a valid email address';
     }
@@ -136,6 +166,7 @@ export default function EditUser() {
     setLoading(true);
 
     try {
+      // Update user information via API
       await updateUser(id, {
         name: formData.name,
         email: formData.email,
@@ -145,7 +176,7 @@ export default function EditUser() {
       setSuccess('User updated successfully!');
       toast.success('User updated successfully!');
 
-      // Redirect after 2 seconds
+      // Redirect to users list after success
       setTimeout(() => {
         navigate('/users');
       }, 2000);
@@ -158,12 +189,16 @@ export default function EditUser() {
     }
   };
 
+  /**
+   * Handle password change form submission
+   * Validates all password fields and updates via API
+   */
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
 
-    // Validate passwords
+    // Validate all password fields
     const errors = {};
 
     if (!passwordData.currentPassword) {
@@ -189,12 +224,13 @@ export default function EditUser() {
     setLoading(true);
 
     try {
+      // Change password via API
       await changePassword(id, passwordData.currentPassword, passwordData.newPassword);
 
       setSuccess('Password changed successfully!');
       toast.success('Password changed successfully!');
       
-      // Reset password form
+      // Reset password form after successful change
       setPasswordData({
         currentPassword: '',
         newPassword: '',
@@ -212,6 +248,7 @@ export default function EditUser() {
     }
   };
 
+  // Show loading spinner while fetching user data
   if (loadingData) {
     return (
       <div className="container mt-5">
@@ -225,6 +262,7 @@ export default function EditUser() {
     );
   }
 
+  // Show error if user not found
   if (!userData) {
     return (
       <div className="container mt-5">
@@ -333,7 +371,7 @@ export default function EditUser() {
                 </div>
               </form>
 
-              {/* Password Change Section */}
+              {/* Password Change Section - Toggle between button and form */}
               <hr className="my-4" />
               
               {!showPasswordChange ? (
@@ -382,7 +420,7 @@ export default function EditUser() {
                       <div className="invalid-feedback">{passwordErrors.newPassword}</div>
                     )}
                     {passwordStrength && !passwordErrors.newPassword && (
-                      <div className="text-success small mt-1">✓ Password strength: Good</div>
+                      <div className="text-success small mt-1">Password strength: Good</div>
                     )}
                     <small className="form-text text-muted">
                       At least 6 characters with uppercase, lowercase, and number
@@ -404,7 +442,7 @@ export default function EditUser() {
                       <div className="invalid-feedback">{passwordErrors.confirmPassword}</div>
                     )}
                     {passwordData.confirmPassword && !passwordErrors.confirmPassword && (
-                      <div className="text-success small mt-1">✓ Passwords match</div>
+                      <div className="text-success small mt-1">Passwords match</div>
                     )}
                   </div>
 
@@ -421,6 +459,7 @@ export default function EditUser() {
                       type="button"
                       className="btn btn-outline-secondary"
                       onClick={() => {
+                        // Reset password form and hide section
                         setShowPasswordChange(false);
                         setPasswordData({
                           currentPassword: '',

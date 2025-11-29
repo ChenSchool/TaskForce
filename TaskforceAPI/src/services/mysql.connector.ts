@@ -1,6 +1,16 @@
+/**
+ * MySQL Database Connector
+ * Manages connection pool and executes database queries
+ * Provides singleton pattern for database connections
+ */
 import { createPool, Pool } from 'mysql';
 let pool: Pool | null = null;
 
+/**
+ * Initialize MySQL connection pool
+ * Creates pool with environment configuration
+ * Verifies connection on initialization
+ */
 const initializeMySqlConnector = () => {
   try {
 
@@ -34,6 +44,13 @@ const initializeMySqlConnector = () => {
   }
 };
 
+/**
+ * Execute SQL query with parameters
+ * Initializes pool if not exists, executes query and returns typed result
+ * @param query - SQL query string
+ * @param params - Query parameters for prepared statement
+ * @returns Promise with typed query results
+ */
 export const execute = <T>(query: string, params: string[] | Object): Promise<T> => {
     try {
       if (!pool) {

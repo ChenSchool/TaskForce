@@ -1,3 +1,7 @@
+/**
+ * Main application component.
+ * Configures routing, authentication provider, toast notifications, and layout wrapper for the entire application.
+ */
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
@@ -25,6 +29,9 @@ import ViewArchive from './components/ViewArchive';
 import ListUsers from './components/ListUsers';
 import ArchiveScheduleManager from './components/ArchiveScheduleManager';
 
+/**
+ * Root application component with route definitions and role-based access control.
+ */
 function App() {
   return (
     <AuthProvider>

@@ -1,3 +1,7 @@
+/**
+ * Tasks controller module.
+ * Handles HTTP request logic for maintenance task CRUD operations with field validation.
+ */
 import { Request, RequestHandler, Response } from "express";
 import * as dao from "../dao/tasks.dao";
 import { Task } from "../models/tasks.model";
@@ -7,6 +11,9 @@ import * as PersonnelDao from "../dao/personnel.dao";
 import * as AssignmentDao from "../dao/assignments.dao";
 import { Assignment } from "../models/assignments.model";
 
+/**
+ * Fetch all tasks.
+ */
 export const getAll: RequestHandler = async (req: Request, res: Response) => {
   try {
     const tasks = await dao.getAllTasks();
@@ -17,6 +24,9 @@ export const getAll: RequestHandler = async (req: Request, res: Response) => {
   }
 }
 
+/**
+ * Fetch a single task by ID.
+ */
 export const getById: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const taskId = Number(req.params.id);
@@ -34,6 +44,9 @@ export const getById: RequestHandler = async (req: Request, res: Response): Prom
   }
 }
 
+/**
+ * Fetch all tasks associated with a specific aircraft.
+ */
 export const getByAircraftId: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const aircraftId = Number(req.params.id);
@@ -51,6 +64,9 @@ export const getByAircraftId: RequestHandler = async (req: Request, res: Respons
   }
 }
 
+/**
+ * Create a new task with required field validation.
+ */
 export const create: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const newTask: Task = req.body;
@@ -85,6 +101,9 @@ export const create: RequestHandler = async (req: Request, res: Response): Promi
   }
 }
 
+/**
+ * Update an existing task with required field validation.
+ */
 export const update: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const taskId = Number(req.params.id);
@@ -125,6 +144,9 @@ export const update: RequestHandler = async (req: Request, res: Response): Promi
   }
 }
 
+/**
+ * Delete a task by ID.
+ */
 export const remove: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const taskId = Number(req.params.id);

@@ -1,9 +1,20 @@
+/**
+ * Authentication Controller
+ * 
+ * Handles HTTP requests for user authentication including registration, login,
+ * logout, token refresh, and current user retrieval with JWT token management.
+ */
+
 import { Request, Response } from 'express';
 import * as UsersDao from '../dao/users.dao';
 import * as AuthUtils from '../utils/auth.utils';
 import { LoginRequest, RegisterRequest, UserDTO } from '../models/user.model';
 import { AuthRequest } from '../middleware/auth.middleware';
 
+/**
+ * Register a new user with password hashing and token generation
+ * @route POST /api/auth/register
+ */
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     const data: RegisterRequest = req.body;
@@ -60,6 +71,10 @@ export const register = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+/**
+ * Authenticate user with credentials and generate JWT tokens
+ * @route POST /api/auth/login
+ */
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { username, password }: LoginRequest = req.body;
@@ -109,6 +124,10 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+/**
+ * Refresh access token using valid refresh token
+ * @route POST /api/auth/refresh
+ */
 export const refreshToken = async (req: Request, res: Response): Promise<void> => {
   try {
     const { refreshToken } = req.body;
@@ -159,6 +178,10 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
   }
 };
 
+/**
+ * Logout user by invalidating refresh token
+ * @route POST /api/auth/logout
+ */
 export const logout = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { refreshToken } = req.body;
@@ -174,6 +197,10 @@ export const logout = async (req: AuthRequest, res: Response): Promise<void> => 
   }
 };
 
+/**
+ * Get current authenticated user details
+ * @route GET /api/auth/me
+ */
 export const getCurrentUser = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     if (!req.user) {

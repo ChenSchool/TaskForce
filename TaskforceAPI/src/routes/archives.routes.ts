@@ -1,3 +1,10 @@
+/**
+ * Archives Routes
+ * 
+ * Defines REST API endpoints for archive management with validation middleware.
+ * Supports retrieving, creating, and deleting archive snapshots.
+ */
+
 import { Router } from 'express';
 import * as ctrl from '../controllers/archives.controller';
 import { archiveValidation, idParamValidation } from '../validators/entities.validator';

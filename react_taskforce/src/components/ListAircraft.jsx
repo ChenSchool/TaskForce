@@ -1,8 +1,15 @@
+/**
+ * ListAircraft component.
+ * Displays aircraft list with CRUD operations and export functionality.
+ */
 import React, { useState, useEffect } from 'react';
 import { getAllAircraft, deleteAircraft } from '../api/aircraft';
 import { useNavigate } from 'react-router-dom';
 import { exportToCSV, exportToPDF } from '../utils/export';
 
+/**
+ * Aircraft list component with table view, add/edit/delete actions, and CSV/PDF export.
+ */
 export default function ListAircraft() {
   const [list, setList] = useState([]);
   const nav = useNavigate();

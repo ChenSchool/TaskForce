@@ -1,4 +1,7 @@
-// Archives queries
+/**
+ * Archives SQL queries module.
+ * Contains parameterized SQL queries for archive snapshot management and retrieval of archivable completed records.
+ */
 export const archiveQueries = {
   
   getAllArchives: `

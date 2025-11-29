@@ -1,3 +1,10 @@
+/**
+ * Authentication Routes
+ * 
+ * Defines REST API endpoints for user authentication including login, logout,
+ * token refresh, and current user retrieval with validation middleware.
+ */
+
 import { Router } from 'express';
 import * as authController from '../controllers/auth.controller';
 import { authenticate } from '../middleware/auth.middleware';

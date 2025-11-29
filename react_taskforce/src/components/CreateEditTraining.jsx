@@ -1,3 +1,7 @@
+/**
+ * CreateEditTraining component.
+ * Form for creating or editing training records with personnel selection, phase input, progress tracking, and completion status.
+ */
 import React, { useState, useEffect } from 'react';
 import { getAllPersonnel } from '../api/personnel';
 import { getTrainingById, createTraining, updateTraining } from '../api/training';
@@ -5,6 +9,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getErrorMessage } from '../utils/validation';
 import { toast } from 'react-toastify';
 
+/**
+ * Training form component with progress slider, completion toggle, and comprehensive validation.
+ */
 export default function CreateEditTraining() {
   const [personnelId, setPersonnelId] = useState('');
   const [phase, setPhase] = useState('');

@@ -8,12 +8,10 @@ export const handleValidationErrors = (req: Request, res: Response, next: NextFu
   const errors = validationResult(req);
   
   if (!errors.isEmpty()) {
+    const firstError = errors.array()[0];
+    // Return the first error message directly for simpler client handling
     res.status(400).json({
-      message: 'Validation failed',
-      errors: errors.array().map(err => ({
-        field: err.type === 'field' ? err.path : 'unknown',
-        message: err.msg
-      }))
+      message: firstError.msg
     });
     return;
   }

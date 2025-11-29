@@ -1,3 +1,7 @@
+/**
+ * Data export utility module.
+ * Provides functions to export application data to CSV and PDF formats with formatting.
+ */
 import Papa from 'papaparse';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';

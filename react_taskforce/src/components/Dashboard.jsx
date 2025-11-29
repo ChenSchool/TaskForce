@@ -1,3 +1,8 @@
+/**
+ * Dashboard component.
+ * Displays comprehensive overview with statistics, recent data previews, and navigation to detailed views.
+ * Shows tasks, personnel, aircraft, assignments, and training data with counts and status breakdowns.
+ */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDashboardStats } from '../api/dashboard';
@@ -7,6 +12,9 @@ import { getAllAircraft } from '../api/aircraft';
 import { getAllAssignments } from '../api/assignments';
 import { getAllTraining } from '../api/training';
 
+/**
+ * Main dashboard component with aggregate statistics and data previews.
+ */
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [tasks, setTasks] = useState([]);
@@ -22,6 +30,9 @@ export default function Dashboard() {
     loadDashboard();
   }, []);
 
+  /**
+   * Load all dashboard data in parallel for optimal performance.
+   */
   const loadDashboard = async () => {
     try {
       setLoading(true);

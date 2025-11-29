@@ -1,7 +1,18 @@
+/**
+ * ViewArchive Component
+ * 
+ * Displays detailed view of a single archive record including associated tasks,
+ * personnel, and training data. Shows archive metadata and formatted timestamps.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { getArchiveById } from '../api/archives';
 import { useNavigate, useParams } from 'react-router-dom';
 
+/**
+ * Component for viewing detailed archive information.
+ * Renders data tables for tasks, personnel, and training records within the archive.
+ */
 export default function ViewArchive() {
   const [archive, setArchive] = useState(null);
   const [loading, setLoading] = useState(true);

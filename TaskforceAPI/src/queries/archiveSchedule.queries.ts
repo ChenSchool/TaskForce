@@ -1,5 +1,7 @@
-// Archive Schedule Queries
-
+/**
+ * Archive Schedule SQL queries module.
+ * Contains parameterized SQL queries for automated archive scheduling, execution, logging, and archived data management.
+ */
 export const archiveScheduleQueries = {
   // Get all schedules
   getAllSchedules: `

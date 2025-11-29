@@ -1,3 +1,10 @@
+/**
+ * Audit Logs SQL Queries
+ * 
+ * Contains parameterized SQL queries for audit log operations including
+ * creating entries and retrieving logs with user/entity filtering.
+ */
+
 export const auditLogsQueries = {
   createAuditLog: `
     INSERT INTO audit_logs (user_id, action, entity_type, entity_id, changes, ip_address)

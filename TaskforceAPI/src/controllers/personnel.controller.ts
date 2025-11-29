@@ -1,9 +1,15 @@
+/**
+ * Personnel controller module.
+ * Handles HTTP request logic for personnel CRUD operations.
+ */
 import {Request, RequestHandler, Response} from 'express';
 import * as PersonnelDao from '../dao/personnel.dao';
 import {Personnel} from '../models/personnel.model';
 import {OkPacket} from 'mysql';
 
-// This controller handles the CRUD operations for personnel
+/**
+ * Fetch all personnel records.
+ */
 export const getAll: RequestHandler = async (req: Request, res: Response) => {
   try {
     const personnel = await PersonnelDao.getAllPersonnel();
@@ -12,8 +18,11 @@ export const getAll: RequestHandler = async (req: Request, res: Response) => {
     console.error('[personnel.controller][GetAllPersonnel][Error]', error);
     res.status(500).json({error: 'Failed to fetch personnel'});
   }
-}; // Get all personnel
+};
 
+/**
+ * Fetch all personnel for a specific shift.
+ */
 export const getByShift: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const shift = req.params.shift;
@@ -23,8 +32,11 @@ export const getByShift: RequestHandler = async (req: Request, res: Response): P
     console.error('[personnel.controller][GetPersonnelByShift][Error]', error);
     res.status(500).json({error: 'Failed to fetch personnel for shift'});
   }
-}; // Get personnel by shift
+};
 
+/**
+ * Fetch a single personnel record by ID.
+ */
 export const getById: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const personnelId = Number(req.params.id);
@@ -40,8 +52,11 @@ export const getById: RequestHandler = async (req: Request, res: Response): Prom
     console.error('[personnel.controller][GetPersonnelById][Error]', error);
     res.status(500).json({error: 'Failed to fetch personnel'});
   }
-}; // Get personnel by id
+};
 
+/**
+ * Create a new personnel record.
+ */
 export const create: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const newPersonnel: Personnel = req.body;
@@ -52,8 +67,11 @@ export const create: RequestHandler = async (req: Request, res: Response): Promi
     console.error('[personnel.controller][CreatePersonnel][Error]', error);
     res.status(500).json({error: 'Failed to create personnel'});
   }
-}; // Create new personnel
+};
 
+/**
+ * Update an existing personnel record.
+ */
 export const update: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const personnelId = Number(req.params.id);
@@ -70,8 +88,11 @@ export const update: RequestHandler = async (req: Request, res: Response): Promi
     console.error('[personnel.controller][UpdatePersonnel][Error]', error);
     res.status(500).json({error: 'Failed to update personnel'});
   }
-}; // Update personnel
+};
 
+/**
+ * Delete a personnel record by ID.
+ */
 export const remove: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const personnelId = Number(req.params.id);
@@ -87,5 +108,4 @@ export const remove: RequestHandler = async (req: Request, res: Response): Promi
     console.error('[personnel.controller][DeletePersonnel][Error]', error);
     res.status(500).json({error: 'Failed to delete personnel'});
   }
-}; // Delete personnel
-
+};

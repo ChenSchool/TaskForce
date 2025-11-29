@@ -1,10 +1,20 @@
+/**
+ * Archive Schedule Controller
+ * 
+ * Handles HTTP requests for automated archive scheduling including schedule CRUD,
+ * manual archiving, archive logs, and scheduler status monitoring.
+ */
+
 import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth.middleware';
 import * as archiveScheduleDao from '../dao/archiveSchedule.dao';
 import { ArchiveSchedule } from '../models/archiveSchedule.model';
 import { getActiveScheduleCount } from '../services/archiveScheduler.service';
 
-// Get all archive schedules
+/**
+ * Get all archive schedules
+ * @route GET /api/archive-schedule/schedules
+ */
 export const getAllSchedules = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const schedules = await archiveScheduleDao.getAllSchedules();
@@ -15,7 +25,10 @@ export const getAllSchedules = async (req: AuthRequest, res: Response): Promise<
   }
 };
 
-// Get schedule by ID
+/**
+ * Get schedule by ID
+ * @route GET /api/archive-schedule/schedules/:id
+ */
 export const getScheduleById = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const id = parseInt(req.params.id);
@@ -33,7 +46,10 @@ export const getScheduleById = async (req: AuthRequest, res: Response): Promise<
   }
 };
 
-// Create new schedule
+/**
+ * Create new archive schedule
+ * @route POST /api/archive-schedule/schedules
+ */
 export const createSchedule = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { schedule_time, shift, enabled } = req.body;
@@ -60,7 +76,10 @@ export const createSchedule = async (req: AuthRequest, res: Response): Promise<v
   }
 };
 
-// Update schedule
+/**
+ * Update existing archive schedule
+ * @route PUT /api/archive-schedule/schedules/:id
+ */
 export const updateSchedule = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const id = parseInt(req.params.id);
@@ -91,7 +110,10 @@ export const updateSchedule = async (req: AuthRequest, res: Response): Promise<v
   }
 };
 
-// Delete schedule
+/**
+ * Delete archive schedule
+ * @route DELETE /api/archive-schedule/schedules/:id
+ */
 export const deleteSchedule = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const id = parseInt(req.params.id);
@@ -109,7 +131,10 @@ export const deleteSchedule = async (req: AuthRequest, res: Response): Promise<v
   }
 };
 
-// Manual archive - archive assignments NOW for a specific shift
+/**
+ * Manual archive - archive assignments NOW for a specific shift
+ * @route POST /api/archive-schedule/manual
+ */
 export const manualArchive = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { shift } = req.body;
@@ -173,7 +198,10 @@ export const manualArchive = async (req: AuthRequest, res: Response): Promise<vo
   }
 };
 
-// Get archive logs
+/**
+ * Get archive execution logs
+ * @route GET /api/archive-schedule/logs
+ */
 export const getArchiveLogs = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const logs = await archiveScheduleDao.getArchiveLogs();
@@ -184,7 +212,10 @@ export const getArchiveLogs = async (req: AuthRequest, res: Response): Promise<v
   }
 };
 
-// Get archived assignments
+/**
+ * Get archived assignments with optional date filtering
+ * @route GET /api/archive-schedule/archived-assignments
+ */
 export const getArchivedAssignments = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { start_date, end_date } = req.query;
@@ -206,7 +237,10 @@ export const getArchivedAssignments = async (req: AuthRequest, res: Response): P
   }
 };
 
-// Get scheduler status - for diagnostics
+/**
+ * Get scheduler status - for diagnostics and monitoring
+ * @route GET /api/archive-schedule/status
+ */
 export const getSchedulerStatus = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const timezone = process.env.TZ || 'America/Phoenix';

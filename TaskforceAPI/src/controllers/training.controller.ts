@@ -1,9 +1,15 @@
+/**
+ * Training controller module.
+ * Handles HTTP request logic for training record CRUD operations and statistics retrieval.
+ */
 import { Request, RequestHandler, Response } from "express";
 import { Training } from "../models/training.model";
 import * as TrainingDao from "../dao/training.dao";
 import { OkPacket } from "mysql";
 
-// Get all training records
+/**
+ * Fetch all training records.
+ */
 export const getAll: RequestHandler = async (req: Request, res: Response) => {
   try {
     const training = await TrainingDao.getAllTraining();
@@ -14,7 +20,9 @@ export const getAll: RequestHandler = async (req: Request, res: Response) => {
   }
 };
 
-// Get training by ID
+/**
+ * Fetch a single training record by ID.
+ */
 export const getById: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const trainingId = Number(req.params.id);
@@ -32,7 +40,9 @@ export const getById: RequestHandler = async (req: Request, res: Response): Prom
   }
 };
 
-// Get training by personnel ID
+/**
+ * Fetch all training records for a specific personnel member.
+ */
 export const getByPersonnelId: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const personnelId = Number(req.params.personnelId);
@@ -45,7 +55,9 @@ export const getByPersonnelId: RequestHandler = async (req: Request, res: Respon
   }
 };
 
-// Create new training record
+/**
+ * Create a new training record.
+ */
 export const create: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const newTraining: Training = req.body;
@@ -58,7 +70,9 @@ export const create: RequestHandler = async (req: Request, res: Response): Promi
   }
 };
 
-// Update training record
+/**
+ * Update an existing training record.
+ */
 export const update: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const trainingId = Number(req.params.id);
@@ -77,7 +91,9 @@ export const update: RequestHandler = async (req: Request, res: Response): Promi
   }
 };
 
-// Delete training record
+/**
+ * Delete a training record by ID.
+ */
 export const remove: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const trainingId = Number(req.params.id);
@@ -95,7 +111,9 @@ export const remove: RequestHandler = async (req: Request, res: Response): Promi
   }
 };
 
-// Get training statistics
+/**
+ * Fetch training completion statistics.
+ */
 export const getStats: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const [stats] = await TrainingDao.getTrainingStats();

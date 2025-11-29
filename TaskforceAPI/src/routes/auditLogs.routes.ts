@@ -1,3 +1,10 @@
+/**
+ * Audit Logs Routes
+ * 
+ * Defines REST API endpoints for viewing audit logs with role-based access control.
+ * Restricted to Manager and Supervisor roles only.
+ */
+
 import { Router } from 'express';
 import * as auditLogsController from '../controllers/auditLogs.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';

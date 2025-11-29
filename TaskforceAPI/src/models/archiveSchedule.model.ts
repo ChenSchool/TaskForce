@@ -1,5 +1,7 @@
-// Archive Schedule Models
-
+/**
+ * Archive Schedule model type definitions.
+ * Defines automated archive scheduling, archived assignment storage, execution logs, and API request/response structures.
+ */
 export interface ArchiveSchedule {
   id?: number;
   schedule_time: string; // HH:MM:SS format

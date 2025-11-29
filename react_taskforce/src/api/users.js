@@ -1,5 +1,12 @@
+/**
+ * Users API service module.
+ * Handles user management operations including profile updates, password changes, and dark mode preferences.
+ */
 import { API_BASE } from '../dataSource';
 
+/**
+ * Helper function to construct authorization headers with JWT token.
+ */
 const getAuthHeaders = () => {
   const token = localStorage.getItem('accessToken');
   return {
@@ -8,6 +15,9 @@ const getAuthHeaders = () => {
   };
 };
 
+/**
+ * Fetch all user accounts.
+ */
 export const getAllUsers = async () => {
   const response = await fetch(`${API_BASE}/users`, {
     headers: getAuthHeaders()
@@ -20,6 +30,9 @@ export const getAllUsers = async () => {
   return response.json();
 };
 
+/**
+ * Fetch a single user by ID.
+ */
 export const getUserById = async (id) => {
   const response = await fetch(`${API_BASE}/users/${id}`, {
     headers: getAuthHeaders()
@@ -32,6 +45,9 @@ export const getUserById = async (id) => {
   return response.json();
 };
 
+/**
+ * Update user profile information (name, email, role).
+ */
 export const updateUser = async (id, data) => {
   const response = await fetch(`${API_BASE}/users/${id}`, {
     method: 'PUT',
@@ -47,6 +63,9 @@ export const updateUser = async (id, data) => {
   return response.json();
 };
 
+/**
+ * Change user password with current password verification.
+ */
 export const changePassword = async (id, currentPassword, newPassword) => {
   const response = await fetch(`${API_BASE}/users/${id}/password`, {
     method: 'PUT',
@@ -62,6 +81,9 @@ export const changePassword = async (id, currentPassword, newPassword) => {
   return response.json();
 };
 
+/**
+ * Update user's dark mode preference.
+ */
 export const updateDarkMode = async (id, darkMode) => {
   const response = await fetch(`${API_BASE}/users/${id}/dark-mode`, {
     method: 'PUT',
@@ -77,6 +99,9 @@ export const updateDarkMode = async (id, darkMode) => {
   return response.json();
 };
 
+/**
+ * Deactivate (soft delete) a user account.
+ */
 export const deactivateUser = async (id) => {
   const response = await fetch(`${API_BASE}/users/${id}`, {
     method: 'DELETE',

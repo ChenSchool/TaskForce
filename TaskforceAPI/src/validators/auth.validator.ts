@@ -1,3 +1,10 @@
+/**
+ * Authentication Validation Middleware
+ * 
+ * Contains express-validator rules for authentication operations including
+ * login, registration, and password validation with security requirements.
+ */
+
 import { body } from 'express-validator';
 
 /**

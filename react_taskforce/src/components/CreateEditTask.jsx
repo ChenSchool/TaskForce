@@ -1,3 +1,7 @@
+/**
+ * CreateEditTask component.
+ * Form for creating or editing maintenance tasks with aircraft association, shift, status, and date selection.
+ */
 import React, { useState, useEffect } from 'react';
 import { getAllAircraft } from '../api/aircraft';
 import { getTaskById, createTask, updateTask } from '../api/tasks';
@@ -5,6 +9,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getErrorMessage } from '../utils/validation';
 import { toast } from 'react-toastify';
 
+/**
+ * Task form component with comprehensive validation for all required fields and aircraft selection.
+ */
 export default function CreateEditTask() {
   const [desc, setDesc] = useState('');
   const [shift, setShift] = useState('1st');

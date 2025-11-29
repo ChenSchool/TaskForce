@@ -1,4 +1,7 @@
-
+/**
+ * Personnel SQL queries module.
+ * Contains parameterized SQL queries for personnel CRUD operations including shift-based filtering.
+ */
 export const personnelQueries = {
   getAll: 'SELECT * FROM personnel',
   getById: 'SELECT * FROM personnel WHERE id = ?',

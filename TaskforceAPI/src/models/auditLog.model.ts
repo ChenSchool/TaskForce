@@ -1,3 +1,13 @@
+/**
+ * Audit Log Model
+ * 
+ * TypeScript interface for audit log records that track user actions,
+ * entity changes, and system activity for compliance and debugging.
+ */
+
+/**
+ * AuditLog interface representing a system audit trail entry
+ */
 export interface AuditLog {
   id: number;
   user_id: number | null;

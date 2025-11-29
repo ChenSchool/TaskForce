@@ -1,9 +1,16 @@
+/**
+ * ListTraining component.
+ * Displays training records with progress tracking, CRUD operations, and export functionality.
+ */
 import React, { useState, useEffect } from 'react';
 import { getAllTraining, deleteTraining } from '../api/training';
 import { useNavigate } from 'react-router-dom';
 import { exportToCSV, exportToPDF } from '../utils/export';
 import { useAuth } from '../context/AuthContext';
 
+/**
+ * Training records list component with progress indicators, delete confirmation, and CSV/PDF export.
+ */
 export default function ListTraining() {
   const [training, setTraining] = useState([]);
   const [showConfirm, setShowConfirm] = useState(false);

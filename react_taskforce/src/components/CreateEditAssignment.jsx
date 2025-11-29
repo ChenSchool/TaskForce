@@ -1,3 +1,7 @@
+/**
+ * CreateEditAssignment component.
+ * Form for assigning multiple personnel to a task with shift validation ensuring all personnel match the task's shift.
+ */
 import React, { useState, useEffect } from 'react';
 import { getAllTasks } from '../api/tasks';
 import { getAllPersonnel } from '../api/personnel';
@@ -6,6 +10,9 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { getErrorMessage } from '../utils/validation';
 import { toast } from 'react-toastify';
 
+/**
+ * Assignment form component with dynamic personnel addition, role selection, and shift consistency validation.
+ */
 export default function CreateEditAssignment() {
   const [taskId, setTaskId] = useState('');
   const [lines, setLines] = useState([]);

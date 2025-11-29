@@ -1,7 +1,15 @@
+/**
+ * Audit logging middleware module.
+ * Provides automatic logging of successful operations with user tracking and change details.
+ */
 import { Response, NextFunction } from 'express';
 import { AuthRequest } from './auth.middleware';
 import * as AuditLogsDao from '../dao/auditLogs.dao';
 
+/**
+ * Creates audit log middleware that records successful operations.
+ * Captures user, action, entity details, and changes for compliance tracking.
+ */
 export const auditLog = (action: string, entityType: string) => {
   return async (req: AuthRequest, res: Response, next: NextFunction) => {
     const originalSend = res.json.bind(res);

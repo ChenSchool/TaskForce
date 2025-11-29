@@ -1,9 +1,16 @@
+/**
+ * CreateEditAircraft component.
+ * Form for creating new aircraft or editing existing aircraft with tail number validation.
+ */
 import React, { useState, useEffect } from 'react';
 import { createAircraft, getAircraftById, updateAircraft } from '../api/aircraft';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getErrorMessage } from '../utils/validation';
 import { toast } from 'react-toastify';
 
+/**
+ * Aircraft form component with client-side validation and toast notifications.
+ */
 export default function CreateEditAircraft() {
   const [tail, setTail] = useState('');
   const [error, setError] = useState('');

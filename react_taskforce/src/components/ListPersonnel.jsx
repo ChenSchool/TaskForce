@@ -1,8 +1,15 @@
+/**
+ * ListPersonnel component.
+ * Displays personnel list with CRUD operations, export functionality, and delete confirmation.
+ */
 import React, { useState, useEffect } from 'react';
 import { getAllPersonnel, deletePersonnel } from '../api/personnel';
 import { useNavigate } from 'react-router-dom';
 import { exportToCSV, exportToPDF } from '../utils/export';
 
+/**
+ * Personnel list component with table view, delete confirmation modal, and CSV/PDF export.
+ */
 export default function ListPersonnel() {
   const [items, setItems] = useState([]);
   const [showConfirm, setShowConfirm] = useState(false);

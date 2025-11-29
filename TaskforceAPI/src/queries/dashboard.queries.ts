@@ -1,3 +1,7 @@
+/**
+ * Dashboard SQL queries module.
+ * Contains parameterized SQL queries for dashboard metrics including task statistics, personnel distribution, and activity logs.
+ */
 export const dashboardQueries = {
   getTaskStatsByStatus: `
     SELECT status, COUNT(*) as count

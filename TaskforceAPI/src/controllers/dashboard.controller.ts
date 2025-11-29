@@ -1,7 +1,14 @@
+/**
+ * Dashboard controller module.
+ * Handles fetching and aggregating dashboard statistics including task status, personnel distribution, and training metrics.
+ */
 import { Response } from 'express';
 import * as DashboardDao from '../dao/dashboard.dao';
 import { AuthRequest } from '../middleware/auth.middleware';
 
+/**
+ * Fetch all dashboard statistics in parallel and return aggregated metrics.
+ */
 export const getStats = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     // Fetch all dashboard statistics in parallel

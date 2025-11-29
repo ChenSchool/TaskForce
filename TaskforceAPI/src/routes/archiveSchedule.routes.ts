@@ -1,3 +1,10 @@
+/**
+ * Archive Schedule Routes
+ * 
+ * Defines REST API endpoints for automated archive scheduling with role-based
+ * access control. Restricted to Manager and Supervisor roles with audit logging.
+ */
+
 import { Router } from 'express';
 import * as ctrl from '../controllers/archiveSchedule.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';

@@ -1,3 +1,7 @@
+/**
+ * ListAssignment component.
+ * Displays assignments grouped by task with shift-based filtering, manual archive functionality, and export capabilities.
+ */
 import React, { useState, useEffect } from 'react';
 import { getAllAssignments, deleteAssignment } from '../api/assignments';
 import { manualArchive } from '../api/archiveSchedule';
@@ -6,6 +10,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { exportToCSV, exportToPDF } from '../utils/export';
 
+/**
+ * Assignment list component with shift tabs, grouped task view, manual archiving, and CSV/PDF export.
+ */
 export default function ListAssignment() {
   const location = useLocation();
   const [groupedAssignments, setGroupedAssignments] = useState([]);

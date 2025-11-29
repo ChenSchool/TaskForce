@@ -1,3 +1,7 @@
+/**
+ * Rate limiting middleware module.
+ * Provides configurable rate limiters for different endpoint types to prevent abuse and ensure API stability.
+ */
 import rateLimit from 'express-rate-limit';
 
 /**

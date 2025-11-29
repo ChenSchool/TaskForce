@@ -1,3 +1,11 @@
+/**
+ * TaskForce API Application
+ * 
+ * Main Express application setup with middleware configuration, route registration,
+ * database initialization, and archive scheduler. Provides RESTful API endpoints
+ * for aircraft maintenance task management.
+ */
+
 import express, { Request, Response } from 'express';
 import dotenv from "dotenv";
 import helmet from 'helmet';
@@ -18,7 +26,10 @@ import usersRouter from './routes/users.routes'; // Import usersRouter
 import auditLogsRouter from './routes/auditLogs.routes'; // Import auditLogsRouter
 import dashboardRouter from './routes/dashboard.routes'; // Import dashboardRouter
 
-dotenv.config();
+// Only load .env if not already loaded (test environment loads .env.test first)
+if (!process.env.MY_SQL_DB_DATABASE) {
+  dotenv.config();
+}
 
 const app = express();
 const port = process.env.PORT || 3000;

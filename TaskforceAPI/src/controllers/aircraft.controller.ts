@@ -1,9 +1,15 @@
+/**
+ * Aircraft Controller
+ * Handles HTTP requests for aircraft CRUD operations
+ * Acts as intermediary between routes and data access layer
+ */
 import { Request, RequestHandler, Response } from "express";
 import * as AircraftDao from "../dao/aircraft.dao";
 import { Aircraft } from "../models/aircraft.model";
 
-// controller for aircraft
-// This controller handles the CRUD operations for aircraft
+/**
+ * Get all aircraft records
+ */
 export const getAll: RequestHandler = async (req: Request, res: Response) => { 
   try {
     const aircraft = await AircraftDao.getAllAircraft();
@@ -13,8 +19,11 @@ export const getAll: RequestHandler = async (req: Request, res: Response) => {
     console.error("[aircraft.controller][GetAircraft][Error]", error);
     res.status(500).json({ error: "Failed to fetch aircraft" });
   }
-} // Get all aircraft
+}
 
+/**
+ * Get single aircraft by ID
+ */
 export const getById: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const aircraftId = Number(req.params.id);
@@ -30,20 +39,26 @@ export const getById: RequestHandler = async (req: Request, res: Response): Prom
     console.error("[aircraft.controller][GetAircraftById][Error]", error);
     res.status(500).json({ error: "Failed to fetch aircraft" });
   }
-} // Get aircraft by id
+}
 
+/**
+ * Create new aircraft record
+ */
 export const create: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const newAircraft: Aircraft = req.body;
-    const createdAircraft = await AircraftDao.createAircraft(newAircraft);
+    const result = await AircraftDao.createAircraft(newAircraft);
 
-    res.status(201).json(createdAircraft);
+    res.status(201).json({ insertId: result.insertId });
   } catch (error) {
     console.error("[aircraft.controller][CreateAircraft][Error]", error);
     res.status(500).json({ error: "Failed to create aircraft" });
   }
-} // Create new aircraft
+}
 
+/**
+ * Update existing aircraft by ID
+ */
 export const update: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const aircraftId = Number(req.params.id);
@@ -60,8 +75,11 @@ export const update: RequestHandler = async (req: Request, res: Response): Promi
     console.error("[aircraft.controller][UpdateAircraft][Error]", error);
     res.status(500).json({ error: "Failed to update aircraft" });
   }
-} // Update aircraft by id
+}
 
+/**
+ * Delete aircraft by ID
+ */
 export const remove: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const aircraftId = Number(req.params.id);
@@ -77,4 +95,4 @@ export const remove: RequestHandler = async (req: Request, res: Response): Promi
     console.error("[aircraft.controller][DeleteAircraft][Error]", error);
     res.status(500).json({ error: "Failed to delete aircraft" });
   }
-} // Delete aircraft by id
+}

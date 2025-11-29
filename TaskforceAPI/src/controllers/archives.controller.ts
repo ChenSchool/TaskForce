@@ -1,9 +1,19 @@
+/**
+ * Archives Controller
+ * 
+ * Handles HTTP requests for archive management including retrieving, creating,
+ * and deleting archive snapshots of tasks, assignments, and training data.
+ */
+
 import { Request, RequestHandler, Response } from "express";
 import { Archive, ArchiveRequest } from "../models/archives.model";
 import * as ArchiveDao from "../dao/archives.dao";
 import { OkPacket } from "mysql";
 
-// Get all archives
+/**
+ * Get all archives
+ * @route GET /api/archives
+ */
 export const getAll: RequestHandler = async (req: Request, res: Response) => {
   try {
     const archives = await ArchiveDao.getAllArchives();
@@ -14,7 +24,10 @@ export const getAll: RequestHandler = async (req: Request, res: Response) => {
   }
 };
 
-// Get archive by ID
+/**
+ * Get archive by ID with parsed JSON data
+ * @route GET /api/archives/:id
+ */
 export const getById: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const archiveId = Number(req.params.id);
@@ -37,7 +50,11 @@ export const getById: RequestHandler = async (req: Request, res: Response): Prom
   }
 };
 
-// Create new archive (manual archive creation)
+/**
+ * Create new archive (manual archive creation)
+ * Archives completed tasks, assignments, and training for a specific shift
+ * @route POST /api/archives
+ */
 export const create: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const archiveRequest: ArchiveRequest = req.body;
@@ -82,7 +99,10 @@ export const create: RequestHandler = async (req: Request, res: Response): Promi
   }
 };
 
-// Delete archive
+/**
+ * Delete archive by ID
+ * @route DELETE /api/archives/:id
+ */
 export const remove: RequestHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const archiveId = Number(req.params.id);

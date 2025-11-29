@@ -1,3 +1,7 @@
+/**
+ * Task SQL queries module.
+ * Contains parameterized SQL queries for maintenance task CRUD operations.
+ */
 export const taskQueries = {
     // Fetch all tasks
     getAllTasks: `

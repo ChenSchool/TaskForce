@@ -1,7 +1,12 @@
+/**
+ * Error handling middleware module.
+ * Provides centralized error handling for Express application with logging and standardized JSON responses.
+ */
 import { Request, Response, NextFunction } from 'express';
 
-// This middleware function handles errors that occur in the application.
-// It logs the error to the console and sends a JSON response with the error message and status code.
+/**
+ * Global error handler middleware that catches and formats errors.
+ */
 export function errorHandler(
   err: any,
   req: Request,
