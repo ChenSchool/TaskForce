@@ -40,14 +40,17 @@ export const AuthProvider = ({ children }) => {
 
   /**
    * Check authentication status on component mount
+   * Only auto-login if user selected "Remember Me" on last login
    * Validates stored tokens and refreshes if needed
    */
   useEffect(() => {
     const checkAuth = async () => {
+      const rememberMe = localStorage.getItem('rememberMe') === 'true';
       const storedAccessToken = localStorage.getItem('accessToken');
       const storedRefreshToken = localStorage.getItem('refreshToken');
       
-      if (storedAccessToken) {
+      // Only auto-login if rememberMe is enabled
+      if (storedAccessToken && rememberMe) {
         try {
           const userData = await getCurrentUser();
           setUser(userData);
@@ -87,6 +90,12 @@ export const AuthProvider = ({ children }) => {
             setUser(null);
           }
         }
+      } else if (!rememberMe) {
+        // Clear tokens if rememberMe is not set (security measure)
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        setAccessToken(null);
+        setRefreshTokenValue(null);
       }
       setLoading(false);
     };
@@ -98,11 +107,15 @@ export const AuthProvider = ({ children }) => {
   /**
    * Login user with credentials
    * Stores tokens and user data in state and localStorage
+   * @param {string} username - Username
+   * @param {string} password - Password
+   * @param {boolean} rememberMe - Whether to persist login across sessions
    */
-  const login = async (username, password) => {
+  const login = async (username, password, rememberMe = false) => {
     const data = await apiLogin(username, password);
     localStorage.setItem('accessToken', data.accessToken);
     localStorage.setItem('refreshToken', data.refreshToken);
+    localStorage.setItem('rememberMe', rememberMe.toString());
     setAccessToken(data.accessToken);
     setRefreshTokenValue(data.refreshToken);
     setUser(data.user);
@@ -125,6 +138,7 @@ export const AuthProvider = ({ children }) => {
     } finally {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
+      localStorage.removeItem('rememberMe');
       setAccessToken(null);
       setRefreshTokenValue(null);
       setUser(null);

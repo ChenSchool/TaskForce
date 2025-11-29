@@ -14,6 +14,7 @@ import { toast } from 'react-toastify';
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const [usernameError, setUsernameError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -58,7 +59,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await login(username, password);
+      await login(username, password, rememberMe);
       toast.success('Login successful! Welcome back.');
       navigate('/dashboard');
     } catch (err) {
@@ -106,7 +107,7 @@ export default function Login() {
                     )}
                   </div>
 
-                  <div className="mb-4">
+                  <div className="mb-3">
                     <label htmlFor="password" className="form-label" style={{color: 'white'}}>Password</label>
                     <input
                       type="password"
@@ -117,6 +118,19 @@ export default function Login() {
                       required
                       placeholder="Enter password"
                     />
+                  </div>
+
+                  <div className="mb-4 form-check">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id="rememberMe"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                    />
+                    <label className="form-check-label" htmlFor="rememberMe" style={{color: 'white'}}>
+                      Remember me (stay logged in)
+                    </label>
                   </div>
 
                   <button
