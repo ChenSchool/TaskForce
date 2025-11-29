@@ -215,9 +215,9 @@ TaskForce/
 - Create/Edit/Delete tasks
 - Aircraft association
 - Shift assignment (1st, 2nd, 3rd)
-- Status tracking (Pending, In Progress, Completed)
-- Multi-personnel assignments
-
+- Status tracking (In Progress, Completed)
+- Multi-personnel Assignments
+a
 ### Personnel Management
 - Track employee information
 - Specialty and role assignment
@@ -225,9 +225,8 @@ TaskForce/
 - Training history integration
 
 ### Training System
-- Training phase tracking (I, II, III, IV, V)
+- Training phase tracking (I, II, III, IV, V, VI)
 - Progress percentage monitoring
-- Completion date tracking
 - Personnel-specific training records
 
 ### Archive System
