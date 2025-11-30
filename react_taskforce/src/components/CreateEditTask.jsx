@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { getAllAircraft } from '../api/aircraft';
 import { getTaskById, createTask, updateTask } from '../api/tasks';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { getErrorMessage } from '../utils/validation';
 import { toast } from 'react-toastify';
 
@@ -13,8 +13,9 @@ import { toast } from 'react-toastify';
  * Task form component with comprehensive validation for all required fields and aircraft selection.
  */
 export default function CreateEditTask() {
+  const location = useLocation();
   const [desc, setDesc] = useState('');
-  const [shift, setShift] = useState('1st');
+  const [shift, setShift] = useState(location.state?.shift || '1st');
   const [status, setStatus] = useState('Incomplete');
   const [date, setDate] = useState('');
   const [aircraft, setAircraft] = useState([]);
@@ -24,6 +25,7 @@ export default function CreateEditTask() {
   const nav = useNavigate();
   const { id } = useParams();
   const editing = Boolean(id);
+  const activeShift = location.state?.shift;
 
   useEffect(() => {
     getAllAircraft().then(setAircraft);
@@ -32,7 +34,9 @@ export default function CreateEditTask() {
         setDesc(t.description);
         setShift(t.shift);
         setStatus(t.status);
-        setDate(t.date);
+        // Ensure date is properly formatted for date input (YYYY-MM-DD)
+        const taskDate = t.date ? t.date.split('T')[0] : '';
+        setDate(taskDate);
         setAircraftId(t.aircraft_id);
       });
     }
@@ -47,8 +51,8 @@ export default function CreateEditTask() {
     if (!desc || desc.trim() === '') {
       errors.description = 'Description is required';
     }
-    if (!date) {
-      errors.date = 'Date is required';
+    if (!date || date.trim() === '') {
+      errors.date = 'Please enter a date';
     }
     if (!aircraftId) {
       errors.aircraft_id = 'Aircraft selection is required';
@@ -56,8 +60,10 @@ export default function CreateEditTask() {
 
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
-      setError('Please fill in all required fields');
-      toast.error('Please fill in all required fields');
+      // Show the most relevant error message
+      const errorMessage = errors.date || errors.description || errors.aircraft_id || 'Please fill in all required fields';
+      setError(errorMessage);
+      toast.error(errorMessage);
       return;
     }
 
@@ -70,11 +76,33 @@ export default function CreateEditTask() {
         await createTask(data);
         toast.success('Task created successfully!');
       }
-      nav('/tasks');
+      nav('/tasks', { state: { shift: activeShift || shift } });
     } catch (err) {
-      const errorMsg = getErrorMessage(err);
-      setError(errorMsg);
-      toast.error(`Failed to ${editing ? 'update' : 'create'} task: ${errorMsg}`);
+      // Check for specific validation errors from backend
+      if (err.response?.data?.errors) {
+        const backendErrors = err.response.data.errors;
+        const newFieldErrors = {};
+        let errorMessage = 'Please correct the following errors:';
+        
+        backendErrors.forEach(error => {
+          if (error.path === 'date') {
+            newFieldErrors.date = 'Please enter a date';
+            errorMessage = 'Please enter a date';
+          } else if (error.path === 'description') {
+            newFieldErrors.description = error.msg;
+          } else if (error.path === 'aircraft_id') {
+            newFieldErrors.aircraft_id = error.msg;
+          }
+        });
+        
+        setFieldErrors(newFieldErrors);
+        setError(errorMessage);
+        toast.error(errorMessage);
+      } else {
+        const errorMsg = getErrorMessage(err);
+        setError(errorMsg);
+        toast.error(`Failed to ${editing ? 'update' : 'create'} task: ${errorMsg}`);
+      }
     }
   };
 
@@ -129,7 +157,14 @@ export default function CreateEditTask() {
                   id="date" 
                   className={`form-control ${fieldErrors.date ? 'is-invalid' : ''}`}
                   value={date} 
-                  onChange={e=>setDate(e.target.value)} 
+                  onChange={e => {
+                    setDate(e.target.value);
+                    // Clear the error when user enters a date
+                    if (e.target.value && fieldErrors.date) {
+                      setFieldErrors(prev => ({ ...prev, date: undefined }));
+                    }
+                  }}
+                  required
                 />
                 {fieldErrors.date && (
                   <div className="invalid-feedback">{fieldErrors.date}</div>
@@ -150,10 +185,14 @@ export default function CreateEditTask() {
                 )}
               </div>
               <div className="d-grid gap-2">
-                <button className="btn btn-primary" onClick={save} disabled={!desc || !date || !aircraftId}>
+                <button 
+                  className="btn btn-primary" 
+                  onClick={save} 
+                  disabled={!desc || !desc.trim() || !date || !date.trim() || !aircraftId}
+                >
                   <i className="bi bi-save me-2"></i> Save Task
                 </button>
-                <button className="btn btn-secondary" onClick={()=>nav('/tasks')}>
+                <button className="btn btn-secondary" onClick={()=>nav('/tasks', { state: { shift: activeShift || shift } })}>
                   <i className="bi bi-arrow-left me-2"></i> Back to Tasks
                 </button>
               </div>

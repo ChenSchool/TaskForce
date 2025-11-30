@@ -93,7 +93,19 @@ export default function ListAssignment() {
       grouped[a.task_id].assignment_ids.push(a.assignment_id);
     });
 
-    setGroupedAssignments(Object.values(grouped));
+    // Sort personnel alphabetically within each task group
+    Object.values(grouped).forEach(group => {
+      group.personnel.sort((a, b) => a.name.localeCompare(b.name));
+    });
+
+    // Sort grouped assignments by aircraft tail number
+    const sortedGrouped = Object.values(grouped).sort((a, b) => {
+      const tailA = a.aircraft_tail || '';
+      const tailB = b.aircraft_tail || '';
+      return tailA.localeCompare(tailB);
+    });
+
+    setGroupedAssignments(sortedGrouped);
   };
 
   const handleDeleteTask = async (taskId, assignmentIds) => {
@@ -207,7 +219,7 @@ export default function ListAssignment() {
                     <div className="action-buttons">
                       <button 
                         className="btn btn-sm btn-outline-primary" 
-                        onClick={() => nav(`/assignments/${g.assignment_ids[0]}`)}>
+                        onClick={() => nav(`/assignments/${g.assignment_ids[0]}`, { state: { shift: activeShift } })}>
                         <i className="bi bi-pencil"></i> Edit
                       </button>
                       <button 

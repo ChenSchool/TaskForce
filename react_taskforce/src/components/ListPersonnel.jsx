@@ -17,7 +17,11 @@ export default function ListPersonnel() {
   const nav = useNavigate();
 
   useEffect(() => { load(); }, []);
-  const load = () => getAllPersonnel().then(setItems);
+  const load = () => getAllPersonnel().then(data => {
+    // Sort personnel alphabetically by name
+    const sortedData = data.sort((a, b) => a.name.localeCompare(b.name));
+    setItems(sortedData);
+  });
 
   const handleExportCSV = () => {
     exportToCSV(items, 'personnel');

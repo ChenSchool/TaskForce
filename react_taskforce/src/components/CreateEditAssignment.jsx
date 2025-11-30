@@ -99,6 +99,15 @@ export default function CreateEditAssignment() {
       return;
     }
 
+    // Validate all lines have both personnel and role selected
+    for (let i = 0; i < lines.length; i++) {
+      if (!lines[i].personnel_id || !lines[i].role) {
+        setValidationError(`Line ${i + 1}: Please select both personnel and role.`);
+        toast.error(`Line ${i + 1}: Please select both personnel and role.`);
+        return;
+      }
+    }
+
     // Validate all lines have both personnel and role
     for (let i = 0; i < lines.length; i++) {
       if (!lines[i].personnel_id) {
